@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pinyin → Arabic</title>
+  <style>
+    :root{
+      --bg:#f5f7fa;
+      --panel:#ffffff;
+      --text:#1a1a2e;
+      --muted:#6b7280;
+      --border:#e2e8f0;
+      --borderLight:#f1f5f9;
+      --panelShadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.03);
+      --chipBg:#f0f4f8;
+      --chipBgBad:#fef2f2;
+      --chipBorderBad:#fca5a5;
+      --accent:#4f46e5;
+      --accentHover:#4338ca;
+      --accentLight:#eef2ff;
+      --rowA:#ffffff;
+      --rowB:#f8fafc;
+      --rowHeight:44px;
+      --radius:10px;
+      --radiusLg:14px;
+    }
+
+    *,*::before,*::after{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      padding:24px 20px 48px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .wrap{
+      max-width:1160px;
+      margin:0 auto;
+    }
+
+    /* ── Header ── */
+    .page-header{
+      margin-bottom:28px;
+      padding-bottom:20px;
+      border-bottom:1px solid var(--border);
+    }
+
+    h1{
+      font-size:22px;
+      margin:0 0 4px 0;
+      font-weight:700;
+      letter-spacing:-0.02em;
+      color:var(--text);
+    }
+
+    .page-subtitle{
+      font-size:13px;
+      color:var(--muted);
+      margin:0;
+      line-height:1.5;
+    }
+
+    /* ── Main layout ── */
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1.3fr;
+      gap:20px;
+      align-items:start;
+    }
+    @media(max-width:860px){
+      .row{
+        grid-template-columns:1fr;
+      }
+    }
+
+    /* ── Panels ── */
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radiusLg);
+      padding:20px;
+      box-shadow:var(--panelShadow);
+    }
+
+    .panel-title{
+      font-size:11px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--muted);
+      margin:0 0 10px 0;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin:0 0 8px 0;
+      line-height:1.4;
+    }
+
+    /* ── Textarea ── */
+    textarea{
+      width:100%;
+      min-height:240px;
+      resize:vertical;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      background:#ffffff;
+      color:var(--text);
+      padding:14px;
+      font-size:14px;
+      line-height:1.65;
+      outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease;
+      font-family: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    textarea:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px var(--accentLight);
+    }
+    textarea::placeholder{ color:#c0c7d0; }
+
+    /* ── Controls ── */
+    .controls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border:1px solid var(--border);
+      background:#ffffff;
+      color:var(--text);
+      padding:8px 16px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:500;
+      font-size:13px;
+      transition:all .15s ease;
+      line-height:1.4;
+    }
+    button:hover{
+      background:#f8fafc;
+      border-color:#cbd5e1;
+    }
+    button:active{
+      transform:scale(0.98);
+    }
+
+    /* Primary convert button */
+    #convertBtn{
+      background:var(--accent);
+      color:#ffffff;
+      border-color:var(--accent);
+      font-weight:600;
+      padding:8px 22px;
+    }
+    #convertBtn:hover{
+      background:var(--accentHover);
+      border-color:var(--accentHover);
+    }
+
+    .controls-right{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+    }
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    #status{
+      font-size:12px;
+      color:var(--muted);
+      padding:2px 0;
+    }
+
+    /* ── Output grid ── */
+    .out{
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      background:#ffffff;
+      padding:0;
+      min-height:240px;
+      overflow:hidden;
+    }
+    .outGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0;
+      min-height:240px;
+      border:none;
+      padding:0;
+    }
+
+    .col{
+      border:none;
+      border-radius:0;
+      overflow:auto;
+      background:#ffffff;
+    }
+    .col + .col{
+      border-left:1px solid var(--border);
+    }
+
+    .colHeader{
+      position:sticky;
+      top:0;
+      background:#f8fafc;
+      border-bottom:1px solid var(--border);
+      padding:10px 14px;
+      font-size:11px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--muted);
+      z-index:1;
+    }
+
+    .colBody{
+      padding:0;
+    }
+
+    /* ── Pinyin lines (left column) ── */
+    .pinLine{
+      display:flex;
+      align-items:center;
+      height:var(--rowHeight);
+      padding:0 14px;
+      margin:0;
+      border-bottom:1px solid var(--borderLight);
+      direction:ltr;
+      font-family: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:13px;
+      color:var(--text);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      box-sizing:border-box;
+    }
+    .pinLine:nth-child(odd){ background:var(--rowA); }
+    .pinLine:nth-child(even){ background:var(--rowB); }
+    .pinLine:last-child{ border-bottom:none; }
+
+    /* ── Arabic lines (right column) ── */
+    .line{
+      display:flex;
+      flex-direction:row-reverse;
+      gap:6px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
+      direction:rtl;
+      height:var(--rowHeight);
+      padding:0 10px;
+      margin:0;
+      border-bottom:1px solid var(--borderLight);
+      box-sizing:border-box;
+    }
+    .line:nth-child(odd){ background:var(--rowA); }
+    .line:nth-child(even){ background:var(--rowB); }
+    .line:last-child{ border-bottom:none; }
+
+    /* ── Tokens / chips ── */
+    .tok{
+      direction:rtl;
+      unicode-bidi:plaintext;
+      padding:4px 10px;
+      border:1px solid var(--border);
+      border-radius:6px;
+      background:var(--chipBg);
+      font-size:15px;
+      line-height:1.2;
+      white-space:nowrap;
+      font-weight:500;
+      color:var(--text);
+    }
+    .tok.bad{
+      background:var(--chipBgBad);
+      border-color:var(--chipBorderBad);
+      border-style:dashed;
+      opacity:1;
+      color:#b91c1c;
+    }
+
+    /* ── Footer hint ── */
+    .output-hint{
+      margin-top:12px;
+      padding:10px 14px;
+      background:#f8fafc;
+      border-radius:8px;
+      border:1px solid var(--borderLight);
+    }
+
+    /* ── Responsive fine-tuning ── */
+    @media(max-width:600px){
+      body{ padding:16px 12px 36px; }
+      .panel{ padding:16px; }
+      h1{ font-size:18px; }
+      .outGrid{
+        grid-template-columns:1fr;
+      }
+      .col + .col{
+        border-left:none;
+        border-top:1px solid var(--border);
+      }
+      textarea{ min-height:160px; font-size:13px; }
+      .controls{ gap:6px; }
+      button{ padding:7px 12px; font-size:12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="page-header">
+      <h1>Pinyin → Arabic</h1>
+      <p class="page-subtitle">Convert Romanized Chinese (Pinyin) into Arabic script blocks, displayed right-to-left.</p>
+    </div>
+
+    <div class="row">
+      <!-- Input panel -->
+      <div class="panel">
+        <p class="panel-title">Input</p>
+        <label for="pin">Paste pinyin text below. Tone numbers like "ma3" are supported.</label>
+        <textarea id="pin" placeholder="ni hao ma&#10;wo zai zheli"></textarea>
+        <div class="controls">
+          <button id="convertBtn" type="button">Convert</button>
+          <button id="clearBtn" type="button">Clear</button>
+          <button id="copyBtn" type="button">Copy output</button>
+          <div class="controls-right">
+            <span class="hint" id="status">Loading pinyin-mapping.json…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output panel -->
+      <div class="panel">
+        <p class="panel-title">Output</p>
+        <label>Each input line is shown side-by-side with its Arabic conversion.</label>
+        <div class="out outGrid" id="out">
+          <div class="col" id="pinCol">
+            <div class="colHeader">Pinyin</div>
+            <div class="colBody" id="pinColBody"></div>
+          </div>
+          <div class="col" id="arCol">
+            <div class="colHeader">Arabic</div>
+            <div class="colBody" id="arColBody"></div>
+          </div>
+        </div>
+        <div class="output-hint">
+          <span class="hint">Unknown tokens appear with a dashed border. This tool maps syllables to Arabic blocks — it does not translate meaning.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- load mapping ---
+    let MAP = null;
+
+    // Resolve path: same folder as this HTML.
+    const MAP_URL = "./pinyin-mapping.json";
+
+    const statusEl = document.getElementById("status");
+    const outEl = document.getElementById("out");
+    const pinEl = document.getElementById("pin");
+    const pinColBodyEl = document.getElementById("pinColBody");
+    const arColBodyEl = document.getElementById("arColBody");
+
+    let LAST_LINES = [];
+
+    function setStatus(msg){ statusEl.textContent = msg; }
+
+    async function loadMap(){
+      try{
+        const res = await fetch(MAP_URL, { cache: "no-store" });
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        MAP = await res.json();
+        setStatus("Ready.");
+      }catch(err){
+        console.error(err);
+        setStatus("Failed to load pinyin-mapping.json (check path).");
+      }
+    }
+
+    // --- helpers ---
+    const INITIALS = [
+      "zh","ch","sh", // must come before single-letter initials
+      "b","p","m","f","d","t","n","l","g","k","h","j","q","x","r","z","c","s",
+      "y","w" // keep y/w as initials for normalization
+    ];
+
+    function stripTone(s){
+      // Remove tone numbers and tone marks (ā á ǎ à etc).
+      // Keep base letters; we'll normalize ü separately.
+      // Examples: "ma3" -> "ma", "mǎ" -> "ma", "wǒ" -> "wo"
+      return s
+        .replace(/[0-9]/g, "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // strip combining marks
+    }
+
+    function normalizeUmlaut(s){
+      // support inputs using ü or u:
+      return s.replace(/u:/g, "ü").replace(/ü/g, "v");
+    }
+
+    function normalizeYW(s){
+      // Convert surface y-/w- syllables to (initial, final) pairs matching our JSON finals.
+      // Return {initial, final} or null.
+      if(!s) return null;
+
+      // y-
+      if(s.startsWith("y")){
+        const tail = s.slice(1);
+        // Special spellings
+        const yMap = {
+          "i":"i", "a":"ia", "o":"io", "e":"ie", // rarely used "yo" etc; keep basic
+          "ya":"ia",
+          "yao":"iao",
+          "yan":"ian",
+          "yang":"iang",
+          "ye":"ie",
+          "yin":"in",
+          "ying":"ing",
+          "yong":"iong",
+          "you":"iu",
+          "yu":"u",
+          "yuan":"uan",
+          "yue":"ue",
+          "yun":"un"
+        };
+
+        if(yMap[s]) return { initial:"y", final:yMap[s] };
+        // fallback: treat as y + tail
+        return { initial:"y", final:tail };
+      }
+
+      // w-
+      if(s.startsWith("w")){
+        const wMap = {
+          "wu":"u",
+          "wa":"ua",
+          "wai":"uai",
+          "wan":"uan",
+          "wang":"uang",
+          "wei":"ui",
+          "wen":"un",
+          "weng":"eng",
+          "wo":"uo"
+        };
+        if(wMap[s]) return { initial:"w", final:wMap[s] };
+        // fallback
+        return { initial:"w", final:s.slice(1) };
+      }
+
+      return null;
+    }
+
+    function splitInitialFinal(s){
+      // Normalize tone + umlaut variants first
+      s = stripTone(s.trim().toLowerCase());
+      s = normalizeUmlaut(s);
+
+      if(!s) return null;
+
+      // Handle y/w special orthography
+      if(s.startsWith("y") || s.startsWith("w")){
+        return normalizeYW(s);
+      }
+
+      // Find initial (longest match)
+      let initial = "";
+      for(const ini of INITIALS){
+        if(ini.length > 1 && s.startsWith(ini)){
+          initial = ini;
+          break;
+        }
+      }
+      if(!initial){
+        // single-letter initial match
+        const first = s[0];
+        if(INITIALS.includes(first)) initial = first;
+      }
+
+      let finalPart = s;
+      if(initial){
+        finalPart = s.slice(initial.length);
+      }else{
+        // zero initial: treat as vowel-initial syllable
+        // Example: "ai" -> initial "a" with final "ai" won't work; but your mapping uses top-level blocks for "a","e","o".
+        // We'll handle pure-vowel syllables below.
+        finalPart = s;
+      }
+
+      // Handle n/l + ü cases if user typed "nue"/"lue" (meaning nüe/lüe). After normalizeUmlaut, "nue" stays "nue".
+      // If they typed with ü, it became v already.
+      if((initial === "n" || initial === "l") && finalPart === "ue"){
+        return { initial, final:"ve" }; // nüe/lüe stored as ve
+      }
+      if((initial === "n" || initial === "l") && finalPart === "v"){
+        return { initial, final:"v" };
+      }
+      if((initial === "n" || initial === "l") && finalPart === "ve"){
+        return { initial, final:"ve" };
+      }
+
+      return { initial: initial || null, final: finalPart };
+    }
+
+    function lookupArabic(token){
+      const raw = token;
+      const t = token.trim();
+      const tNorm = normalizeUmlaut(stripTone(t.toLowerCase()));
+      if(!t) return { text:"", ok:true };
+
+      // Ignore punctuation-only tokens completely
+      if(/^[.,!?;:，。？！；؛،、]+$/.test(t)){
+        return { text:"", ok:true };
+      }
+
+      const parts = splitInitialFinal(tNorm);
+      if(!parts) return { text: raw, ok:false };
+
+      // Case: vowel-only syllables (a/e/o blocks are stored as top-level initials)
+      // Example input "ai" => use initial "a" block and final "ai"
+      if(!parts.initial){
+        // Try direct vowel blocks in order of longest prefix
+        // (a/e/o exist as keys at root)
+        const vowelKeys = ["a","e","o"];
+        for(const vk of vowelKeys){
+          if(tNorm.startsWith(vk) && MAP && MAP[vk]){
+            const finalGuess = tNorm; // e.g., "ài" -> "ai" under "a" block
+            const v = MAP[vk][finalGuess];
+            if(v) return { text:v, ok:true };
+          }
+        }
+        return { text: raw, ok:false };
+      }
+
+      if(!MAP || !MAP[parts.initial]) return { text: raw, ok:false };
+      const v = MAP[parts.initial][parts.final];
+      if(!v) return { text: raw, ok:false };
+      return { text:v, ok:true };
+    }
+
+    function renderOutput(lines){
+      pinColBodyEl.innerHTML = "";
+      arColBodyEl.innerHTML = "";
+      LAST_LINES = [];
+      for(const line of lines){
+        const div = document.createElement("div");
+        div.className = "line";
+
+        // split by spaces, but preserve simple punctuation tokens
+        const tokens = line
+          .replace(/\t/g, " ")
+          .replace(/([.,!?;:，。？！；؛،、])/g, " $1 ")
+          .split(/\s+/)
+          .filter(Boolean);
+
+        const pinLine = document.createElement("div");
+        pinLine.className = "pinLine";
+        pinLine.textContent = line;
+        pinColBodyEl.appendChild(pinLine);
+
+        // Store the order that matches the visual layout (row-reverse)
+        // Only store non-empty converted output (punctuation is ignored by lookupArabic)
+        const renderOrder = [...tokens].reverse();
+        LAST_LINES.push(
+          renderOrder
+            .map(tok => lookupArabic(tok).text)
+            .filter(Boolean)
+        );
+
+        if(tokens.length === 0){
+          // empty line => spacing
+          const spacer = document.createElement("div");
+          spacer.style.height = "6px";
+          pinColBodyEl.appendChild(spacer.cloneNode(true));
+          arColBodyEl.appendChild(spacer);
+          continue;
+        }
+
+        for(const tok of renderOrder){
+          const res = lookupArabic(tok);
+
+          // Skip punctuation or empty results
+          if(!res.text) continue;
+
+          const span = document.createElement("span");
+          span.className = "tok" + (res.ok ? "" : " bad");
+          span.textContent = res.text;
+          div.appendChild(span);
+        }
+
+        arColBodyEl.appendChild(div);
+      }
+    }
+
+    function convert(){
+      const text = pinEl.value || "";
+      const lines = text.split(/\r?\n/);
+      renderOutput(lines);
+    }
+
+    document.getElementById("convertBtn").addEventListener("click", convert);
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      pinEl.value = "";
+      pinColBodyEl.innerHTML = "";
+      arColBodyEl.innerHTML = "";
+      pinEl.focus();
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      // Convert first so copy always reflects current input
+      convert();
+
+      const text = (LAST_LINES || [])
+        .map(parts => parts.join(" "))
+        .join("\n")
+        .trim();
+
+      if(!text){
+        setStatus("Nothing to copy.");
+        return;
+      }
+
+      try{
+        await navigator.clipboard.writeText(text);
+        setStatus("Copied.");
+      }catch(e){
+        console.error(e);
+        // Fallback: select text via a temporary textarea
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        try{
+          document.execCommand("copy");
+          setStatus("Copied.");
+        }catch(err){
+          setStatus("Copy failed (browser blocked).");
+        }
+        document.body.removeChild(ta);
+      }
+    });
+
+    // Keep the two output columns scrolled together
+    let syncing = false;
+    function syncScroll(from, to){
+      if(syncing) return;
+      syncing = true;
+      to.scrollTop = from.scrollTop;
+      syncing = false;
+    }
+    document.getElementById("pinCol").addEventListener("scroll", (e) => {
+      syncScroll(e.currentTarget, document.getElementById("arCol"));
+    });
+    document.getElementById("arCol").addEventListener("scroll", (e) => {
+      syncScroll(e.currentTarget, document.getElementById("pinCol"));
+    });
+
+    loadMap();
+  </script>
+</body>
+</html>
