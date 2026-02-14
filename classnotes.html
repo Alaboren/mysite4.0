@@ -1,0 +1,2023 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Class Hanzi Board</title>
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.3/dist/hanzi-writer.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Noto Kufi Arabic Local";
+      src: url("fonts/NotoKufiArabic-VariableFont_wght.ttf") format("truetype");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Aref Ruqaa Local";
+      src: url("fonts/ArefRuqaa-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Scheherazade New Local";
+      src: url("fonts/ScheherazadeNew-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "KaiTi Slide5 Local";
+      src: url("fonts/KaiTi Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Scheherazade Slide5 Local";
+      src: url("fonts/ScheherazadeNew-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --scene-w: 2650;
+      --scene-h: 1440;
+      --text: #111;
+      --ui-bg: rgba(255,255,255,0.84);
+      --ui-line: rgba(0,0,0,0.25);
+      --ui-accent: #0f3d7a;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Noto Sans", Arial, sans-serif;
+      background: #EEF3F5;
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    #viewport {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+    }
+
+    #scene {
+      position: relative;
+      width: calc(var(--scene-w) * 1px);
+      height: calc(var(--scene-h) * 1px);
+      background: url("picture1.png") no-repeat center center;
+      background-size: 100% 100%;
+      transform-origin: top left;
+      overflow: hidden;
+    }
+
+    .fixed {
+      position: absolute;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      left: 950px;
+      top: 65px;
+      width: 1600px;
+      height: 1320px;
+      overflow: hidden;
+      display: none;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      display: block;
+      pointer-events: auto;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--ui-line);
+      background: rgba(255,255,255,0.9);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #f7d976;
+      border-color: #8a6a00;
+    }
+
+    /* Slide 1 (same visual placement as before, now local to slide) */
+    #div_char { left: 60px; top: 45px; width: 400px; height: 400px; }
+    #div_anim { left: 600px; top: 45px; width: 400px; height: 400px; }
+    #div_info { left: 1106px; top: 10px; width: 475px; height: 475px; }
+    #div_zh { left: 1150px; top: 37.5px; width: 380px; height: 130px; }
+    #div_ar { left: 1150px; top: 184.5px; width: 380px; height: 130px; }
+    #div_tr { left: 1150px; top: 332.8px; width: 380px; height: 130px; }
+    #div_stroke { left: 50px; top: 503px; width: 1500px; height: 94px; overflow: visible; }
+    #div_settings { left: 165px; top: 745px; width: 1337px; height: 460px; }
+    #div_settings .panel { grid-template-rows: auto auto 1fr; }
+    #div_settings .panel > .row:first-child { flex-wrap: nowrap; width: 100%; }
+
+    /* Slide 2 */
+    #stroke_carousel_view { left: 50px; top: 0; width: 1500px; height: 590px; overflow: hidden; }
+    #rules_view { left: 50px; top: 0; width: 1500px; height: 590px; overflow: hidden; }
+    #structure_carousel_view { left: 50px; top: 0; width: 1500px; height: 590px; overflow: hidden; }
+    #stroke_carousel_track {
+      position: absolute;
+      inset: 0 auto auto 0;
+      height: 590px;
+      will-change: transform;
+      transform: translateX(-200px);
+    }
+    #structure_carousel_track {
+      position: absolute;
+      inset: 0 auto auto 0;
+      height: 590px;
+      will-change: transform;
+      transform: translateX(-200px);
+    }
+    .carousel-item {
+      position: absolute;
+      top: 0;
+      width: 590px;
+      height: 590px;
+      display: grid;
+      place-items: center;
+      opacity: 0.35;
+      transition: opacity 180ms ease-in-out;
+    }
+    #div_settings2 { left: 297px; top: 745px; width: 1070px; height: 460px; overflow: visible; }
+    #prevBtn2 { left: -132px; top: 67px; width: 130px; height: 384px; }
+    #nextBtn2 { right: -132px; top: 67px; width: 130px; height: 384px; }
+    #div_settings3, #div_settings4, #div_settings5 { left: 297px; top: 745px; width: 1070px; height: 460px; }
+    #div_settings3, #div_settings4 { overflow: visible; }
+    #div_settings4 .panel { grid-template-rows: auto auto 1fr auto; }
+    #div_settings5 .panel { grid-template-rows: auto 1fr; }
+    #div_display { left: 50px; top: 25px; width: 1535px; height: 590px; overflow: hidden; }
+    #div_display { background: transparent; border-color: transparent; }
+    #div_display .slide5-box { border-color: transparent; }
+    #div_sc { left: 0; top: 0; width: 590px; height: 590px; }
+    #div_tc { left: 590px; top: 0; width: 225px; height: 295px; }
+    #div_variant { left: 590px; top: 295px; width: 225px; height: 295px; }
+    #div_colloquial-name { left: 820px; top: 0; width: 590px; height: 197px; }
+    #div_colloquial-pinyin-zh { left: 820px; top: 197px; width: 590px; height: 197px; }
+    #div_colloquial-pinyin-ar { left: 820px; top: 394px; width: 590px; height: 196px; }
+    #div_example-1 { left: 1417px; top: 0; width: 118px; height: 118px; }
+    #div_example-2 { left: 1417px; top: 118px; width: 118px; height: 118px; }
+    #div_example-3 { left: 1417px; top: 236px; width: 118px; height: 118px; }
+    #div_example-4 { left: 1417px; top: 354px; width: 118px; height: 118px; }
+    #div_example-5 { left: 1417px; top: 472px; width: 118px; height: 118px; }
+    .slide5-box {
+      border: 1px solid var(--ui-line);
+      border-radius: 10px;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 8px;
+      overflow: hidden;
+    }
+    #div_sc.slide5-box { font-size: 360px; line-height: 1; color: #0E2841; }
+    #div_tc.slide5-box { font-size: 150px; line-height: 1; color: #E97132; }
+    #div_variant.slide5-box { font-size: 150px; line-height: 1; color: #0F9ED5; }
+    #div_variant.slide5-box.stacked {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      font-size: 100px;
+      line-height: 1;
+      text-align: center;
+      color: #0F9ED5;
+    }
+    #div_colloquial-name.slide5-box, #div_colloquial-pinyin-zh.slide5-box, #div_colloquial-pinyin-ar.slide5-box {
+      font-size: 64px;
+      line-height: 1.1;
+      color: #0E2841;
+    }
+    #div_example-1.slide5-box, #div_example-2.slide5-box, #div_example-3.slide5-box, #div_example-4.slide5-box, #div_example-5.slide5-box {
+      font-size: 72px;
+      line-height: 1;
+      color: #FFFFFF;
+      padding: 0;
+    }
+    #div_sc, #div_tc, #div_variant, #div_example-1, #div_example-2, #div_example-3, #div_example-4, #div_example-5 {
+      font-family: "KaiTi Slide5 Local", "KaiTi", serif;
+    }
+    #div_colloquial-name, #div_colloquial-pinyin-ar {
+      font-family: "Scheherazade Slide5 Local", "Scheherazade New", serif;
+    }
+    #div_colloquial-pinyin-zh {
+      font-family: "AlNile", "Al Nile", "Times New Roman", serif;
+    }
+    #div_settings5Content {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 250px;
+      gap: 12px;
+    }
+    #radicalButtons {
+      overflow: auto;
+      border: 1px solid var(--ui-line);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.45);
+      padding: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 8px;
+      min-height: 0;
+    }
+    #slide5ExamplesSettings {
+      position: relative;
+      border: 1px solid var(--ui-line);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.45);
+      overflow: hidden;
+    }
+    .slide5-settings-example {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      height: calc(20% - 6px);
+      border: 1px solid var(--ui-line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.7);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 10px;
+      align-items: center;
+      padding: 4px 6px;
+      overflow: hidden;
+    }
+    #slide5-settings-example-1 { top: 3px; }
+    #slide5-settings-example-2 { top: calc(20% + 3px); }
+    #slide5-settings-example-3 { top: calc(40% + 3px); }
+    #slide5-settings-example-4 { top: calc(60% + 3px); }
+    #slide5-settings-example-5 { top: calc(80% + 3px); }
+    .slide5-settings-char {
+      font-family: "KaiTi Slide5 Local", "KaiTi", serif;
+      font-size: 56px;
+      line-height: 1;
+      color: #0E2841;
+      text-align: center;
+      width: 64px;
+    }
+    .slide5-settings-pinyin {
+      font-family: "AlNile", "Al Nile", "Times New Roman", serif;
+      font-size: 24px;
+      line-height: 1;
+      color: #476875;
+      text-align: left;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #slide4CharBox {
+      width: 100%;
+      min-height: 84px;
+      border: 1px solid var(--ui-line);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.5);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      overflow: hidden;
+    }
+    #slide4CharLabel {
+      font-size: 22px;
+      font-weight: 700;
+      background: var(--ui-bg);
+      border: 1px solid var(--ui-line);
+      border-radius: 8px;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+    #slide4CharValue {
+      min-width: 0;
+      font-size: 56px;
+      line-height: 1;
+      font-weight: 700;
+      color: #0E2841;
+      text-align: center;
+      direction: ltr;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #prevBtn2[hidden], #nextBtn2[hidden] { display: none; }
+
+    .carousel-svg {
+      width: 100%;
+      height: 100%;
+      background: #0E2841;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      -webkit-mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+      pointer-events: none;
+    }
+
+    .rules-wrap {
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--ui-line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.35);
+      display: grid;
+      grid-template-rows: 74px 480px;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    #rulesTitle {
+      display: grid;
+      place-items: center;
+      font-size: 56px;
+      font-weight: 800;
+      font-family: "Times New Roman", Times, serif;
+      color: #0f3d7a;
+      direction: rtl;
+      text-align: center;
+    }
+
+    #rulesTableViewport {
+      overflow: hidden;
+      border: 1px solid var(--ui-line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.25);
+    }
+
+    #rulesTableTrack {
+      transition: transform 220ms ease-in-out;
+    }
+
+    #rulesTable {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    #rulesTableTrack tr {
+      height: 160px;
+      border-bottom: 1px solid rgba(255,255,255,0.45);
+      background-size: 160% 160%;
+    }
+
+    #rulesTableTrack td {
+      color: #ffffff;
+      font-family: "Noto Kufi Arabic Local", "Segoe UI", sans-serif;
+      font-size: 60px;
+      font-weight: 650;
+      text-shadow: 0 2px 3px rgba(0,0,0,0.48);
+      padding: 0 8px;
+      white-space: nowrap;
+      vertical-align: middle;
+      line-height: 1;
+    }
+
+    #rulesTableTrack td.col-num {
+      width: 7%;
+      text-align: center;
+      direction: ltr;
+      font-size: 56px;
+      font-weight: 700;
+      padding: 0;
+    }
+
+    #rulesTableTrack td.col-a {
+      width: 35%;
+      text-align: left;
+      direction: rtl;
+      padding-right: 8px;
+      padding-left: 2px;
+    }
+
+    #rulesTableTrack td.col-arrow {
+      width: 8%;
+      display: table-cell;
+      text-align: center;
+      font-size: var(--rules-arrow-size, 90px);
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 1;
+      vertical-align: middle;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    #rulesTableTrack td.col-b {
+      width: 50%;
+      text-align: right;
+      direction: rtl;
+      padding-left: 8px;
+      padding-right: 2px;
+    }
+
+    #rulesTableTrack tr:nth-child(1) { background-image: linear-gradient(120deg, #d32f2f, #ef5350); }
+    #rulesTableTrack tr:nth-child(2) { background-image: linear-gradient(120deg, #ef6c00, #fb8c00); }
+    #rulesTableTrack tr:nth-child(3) { background-image: linear-gradient(120deg, #f9a825, #fdd835); }
+    #rulesTableTrack tr:nth-child(4) { background-image: linear-gradient(120deg, #2e7d32, #43a047); }
+    #rulesTableTrack tr:nth-child(5) { background-image: linear-gradient(120deg, #1565c0, #1e88e5); }
+    #rulesTableTrack tr:nth-child(6) { background-image: linear-gradient(120deg, #3949ab, #5c6bc0); }
+    #rulesTableTrack tr:nth-child(7) { background-image: linear-gradient(120deg, #6a1b9a, #8e24aa); }
+
+    .nav2 {
+      position: absolute;
+      border: 1px solid var(--ui-line);
+      background: rgba(255,255,255,0.65);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .nav2 svg { width: 56px; height: 56px; fill: #0E2841; }
+
+    #iconGrid2, #iconGrid4 {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      border: 1px solid var(--ui-line);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.45);
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-content: flex-start;
+    }
+
+    .svg-icon-btn {
+      border: 1px solid var(--ui-line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.88);
+      width: 72px;
+      height: 72px;
+      padding: 4px;
+      cursor: grab;
+      display: grid;
+      place-items: center;
+    }
+
+    .svg-icon-btn.active {
+      outline: 3px solid #E97132;
+      outline-offset: -3px;
+    }
+
+    .svg-icon {
+      width: 100%;
+      height: 100%;
+      background: #0E2841;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      -webkit-mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+      pointer-events: none;
+    }
+
+    .writer-box { width: 100%; height: 100%; }
+
+    .info-line {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 8px 12px;
+      font-weight: 300;
+      color: #476875;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    #zhText { font-size: 62px; letter-spacing: 1px; }
+    #arText { font-size: 52px; direction: rtl; }
+    #trText { font-size: 42px; }
+    #div_zh { font-family: "AlNile", "Al Nile", "Times New Roman", serif; }
+    #div_ar { font-family: "Scheherazade New Local", "Scheherazade New", "Noto Naskh Arabic", serif; }
+    #div_tr { font-family: "Noto Kufi Arabic Local", "Noto Kufi Arabic", "Noto Naskh Arabic", serif; }
+
+    #strokeList {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 4px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+    }
+
+    .stroke-item {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+    }
+
+    .panel {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 12px;
+      padding: 10px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--ui-line);
+      background: var(--ui-bg);
+      color: #111;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    #speed {
+      width: 420px;
+      max-width: 100%;
+      height: 34px;
+      accent-color: var(--ui-accent);
+    }
+
+    #speedVal, #status {
+      font-size: 24px;
+      font-weight: 700;
+      background: var(--ui-bg);
+      border: 1px solid var(--ui-line);
+      border-radius: 8px;
+      padding: 6px 10px;
+    }
+
+    #charButtons {
+      overflow: auto;
+      border: 1px solid var(--ui-line);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.45);
+      padding: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    #charButtons .char-btn {
+      min-width: 144px;
+      min-height: 96px;
+      font-size: 68px;
+      padding: 12px 18px;
+      line-height: 1;
+    }
+
+    .char-btn {
+      min-width: 72px;
+      border: 1px solid var(--ui-line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.86);
+      padding: 10px 14px;
+      font-size: 34px;
+      cursor: pointer;
+    }
+
+    .char-btn.active {
+      background: #f7d976;
+      border-color: #8a6a00;
+    }
+
+    #div_settings5 .panel > .row:first-child {
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+
+    #slide1Search {
+      width: auto;
+      height: 100%;
+      border: 1px solid var(--ui-line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px 10px;
+      font-size: 20px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    #slide1Controls {
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+
+    #slide1Controls #speed {
+      flex: 1 1 auto;
+      min-width: 260px;
+    }
+
+    #slide5Search {
+      width: auto;
+      height: 100%;
+      border: 1px solid var(--ui-line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px 10px;
+      font-size: 20px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    #radicalButtons .char-btn {
+      min-width: 144px;
+      min-height: 96px;
+      font-size: 68px;
+      padding: 12px 18px;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewport">
+    <div id="scene" aria-label="Hanzi classroom layout">
+      <div id="div_slide1" class="slide active">
+        <div id="div_char" class="fixed"><div id="charTarget" class="writer-box"></div></div>
+        <div id="div_anim" class="fixed"><div id="animTarget" class="writer-box"></div></div>
+
+        <div id="div_info" class="fixed" aria-hidden="true"></div>
+        <div id="div_zh" class="fixed info-line"><div id="zhText">-</div></div>
+        <div id="div_ar" class="fixed info-line"><div id="arText">-</div></div>
+        <div id="div_tr" class="fixed info-line"><div id="trText">-</div></div>
+
+        <div id="div_stroke" class="fixed"><div id="strokeList"></div></div>
+
+        <div id="div_settings" class="fixed">
+          <div class="panel">
+            <div class="row">
+              <button class="tab-btn slide-switch active" data-slide="1">الرموز</button>
+              <button class="tab-btn slide-switch" data-slide="2">الضريات</button>
+              <button class="tab-btn slide-switch" data-slide="3">القواعد</button>
+              <button class="tab-btn slide-switch" data-slide="4">الهيكل</button>
+              <button class="tab-btn slide-switch" data-slide="5">الجذور</button>
+              <input id="slide1Search" type="text" placeholder="بحث سريع" aria-label="Search Slide 1 records" />
+            </div>
+            <div id="slide1Controls" class="row">
+              <button class="btn" id="animateBtn">Animate</button>
+              <button class="btn" id="pauseBtn">Pause</button>
+              <span id="status">Ready</span>
+              <input id="speed" type="range" min="0.05" max="3" step="0.01" value="1" />
+              <span id="speedVal">1.00x</span>
+            </div>
+
+            <div id="charButtons"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="div_slide2" class="slide">
+        <div id="stroke_carousel_view" class="fixed">
+          <div id="stroke_carousel_track"></div>
+        </div>
+
+        <div id="div_settings2" class="fixed">
+          <div class="panel">
+            <div class="row">
+              <button class="tab-btn slide-switch" data-slide="1">الرموز</button>
+              <button class="tab-btn slide-switch active" data-slide="2">الضريات</button>
+              <button class="tab-btn slide-switch" data-slide="3">القواعد</button>
+              <button class="tab-btn slide-switch" data-slide="4">الهيكل</button>
+              <button class="tab-btn slide-switch" data-slide="5">الجذور</button>
+            </div>
+            <div class="row" style="font-size:22px;font-weight:700;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:8px;padding:6px 10px;">
+              SVG Icons (click to jump, drag to reorder)
+            </div>
+            <div id="iconGrid2"></div>
+          </div>
+          <button id="prevBtn2" class="nav2 fixed" aria-label="Previous stroke icon" hidden>
+            <svg viewBox="0 0 100 100" aria-hidden="true"><polygon id="prevBtn2Icon" points="70,10 30,50 70,90"></polygon></svg>
+          </button>
+          <button id="nextBtn2" class="nav2 fixed" aria-label="Next stroke icon" hidden>
+            <svg viewBox="0 0 100 100" aria-hidden="true"><polygon id="nextBtn2Icon" points="30,10 70,50 30,90"></polygon></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="div_slide3" class="slide">
+        <div id="rules_view" class="fixed">
+          <div class="rules-wrap">
+            <div id="rulesTitle">قواعد عامة للخط</div>
+            <div id="rulesTableViewport">
+              <table id="rulesTable" aria-label="General writing rules">
+                <tbody id="rulesTableTrack">
+                  <tr>
+                    <td class="col-b">العمودي</td>
+                    <td class="col-arrow">←</td>
+                    <td class="col-a">الأفقي</td>
+                    <td class="col-num">1</td>
+                  </tr>
+                  <tr>
+                    <td class="col-b">المائل اليمين</td>
+                    <td class="col-arrow">←</td>
+                    <td class="col-a">المائل اليسار</td>
+                    <td class="col-num">2</td>
+                  </tr>
+                  <tr>
+                    <td class="col-b">الأسفل</td>
+                    <td class="col-arrow">←</td>
+                    <td class="col-a">الأعلى</td>
+                    <td class="col-num">3</td>
+                  </tr>
+                  <tr>
+                    <td class="col-b">اليمين</td>
+                    <td class="col-arrow">←</td>
+                    <td class="col-a">اليسار</td>
+                    <td class="col-num">4</td>
+                  </tr>
+                  <tr>
+                    <td class="col-b">الداخل ثم إغلاق</td>
+                    <td class="col-arrow">←</td>
+                    <td class="col-a">الخارج</td>
+                    <td class="col-num">5</td>
+                  </tr>
+                  <tr>
+                    <td class="col-b">الجانبين</td>
+                    <td class="col-arrow">←</td>
+                    <td class="col-a">الوسط</td>
+                    <td class="col-num">6</td>
+                  </tr>
+                  <tr>
+                    <td class="col-b">الخارج</td>
+                    <td class="col-arrow">←</td>
+                    <td class="col-a">الداخل</td>
+                    <td class="col-num">7</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="div_settings3" class="fixed">
+          <div class="panel">
+            <div class="row">
+              <button class="tab-btn slide-switch" data-slide="1">الرموز</button>
+              <button class="tab-btn slide-switch" data-slide="2">الضريات</button>
+              <button class="tab-btn slide-switch active" data-slide="3">القواعد</button>
+              <button class="tab-btn slide-switch" data-slide="4">الهيكل</button>
+              <button class="tab-btn slide-switch" data-slide="5">الجذور</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="div_slide4" class="slide">
+        <div id="structure_carousel_view" class="fixed">
+          <div id="structure_carousel_track"></div>
+        </div>
+
+        <div id="div_settings4" class="fixed">
+          <div class="panel">
+            <div class="row">
+              <button class="tab-btn slide-switch" data-slide="1">الرموز</button>
+              <button class="tab-btn slide-switch" data-slide="2">الضريات</button>
+              <button class="tab-btn slide-switch" data-slide="3">القواعد</button>
+              <button class="tab-btn slide-switch active" data-slide="4">الهيكل</button>
+              <button class="tab-btn slide-switch" data-slide="5">الجذور</button>
+            </div>
+            <div class="row" style="font-size:22px;font-weight:700;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:8px;padding:6px 10px;">
+              SVG Structures (click to jump, drag to reorder)
+            </div>
+            <div id="iconGrid4"></div>
+            <div id="slide4CharBox" aria-live="polite">
+              <div id="slide4CharLabel">Character</div>
+              <div id="slide4CharValue">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="div_slide5" class="slide">
+        <div id="div_display" class="fixed">
+          <div id="div_sc" class="fixed slide5-box">-</div>
+          <div id="div_tc" class="fixed slide5-box"></div>
+          <div id="div_variant" class="fixed slide5-box"></div>
+          <div id="div_colloquial-name" class="fixed slide5-box"></div>
+          <div id="div_colloquial-pinyin-zh" class="fixed slide5-box"></div>
+          <div id="div_colloquial-pinyin-ar" class="fixed slide5-box"></div>
+          <div id="div_example-1" class="fixed slide5-box"></div>
+          <div id="div_example-2" class="fixed slide5-box"></div>
+          <div id="div_example-3" class="fixed slide5-box"></div>
+          <div id="div_example-4" class="fixed slide5-box"></div>
+          <div id="div_example-5" class="fixed slide5-box"></div>
+        </div>
+
+        <div id="div_settings5" class="fixed">
+          <div class="panel">
+            <div class="row">
+              <button class="tab-btn slide-switch" data-slide="1">الرموز</button>
+              <button class="tab-btn slide-switch" data-slide="2">الضريات</button>
+              <button class="tab-btn slide-switch" data-slide="3">القواعد</button>
+              <button class="tab-btn slide-switch" data-slide="4">الهيكل</button>
+              <button class="tab-btn slide-switch active" data-slide="5">الجذور</button>
+              <input id="slide5Search" type="text" placeholder="pinyin-zh" aria-label="Search Slide 5 radicals by pinyin-zh" />
+            </div>
+            <div id="div_settings5Content">
+              <div id="radicalButtons"></div>
+              <div id="slide5ExamplesSettings">
+                <div id="slide5-settings-example-1" class="slide5-settings-example" hidden>
+                  <div id="slide5-settings-char-1" class="slide5-settings-char"></div>
+                  <div id="slide5-settings-pinyin-1" class="slide5-settings-pinyin"></div>
+                </div>
+                <div id="slide5-settings-example-2" class="slide5-settings-example" hidden>
+                  <div id="slide5-settings-char-2" class="slide5-settings-char"></div>
+                  <div id="slide5-settings-pinyin-2" class="slide5-settings-pinyin"></div>
+                </div>
+                <div id="slide5-settings-example-3" class="slide5-settings-example" hidden>
+                  <div id="slide5-settings-char-3" class="slide5-settings-char"></div>
+                  <div id="slide5-settings-pinyin-3" class="slide5-settings-pinyin"></div>
+                </div>
+                <div id="slide5-settings-example-4" class="slide5-settings-example" hidden>
+                  <div id="slide5-settings-char-4" class="slide5-settings-char"></div>
+                  <div id="slide5-settings-pinyin-4" class="slide5-settings-pinyin"></div>
+                </div>
+                <div id="slide5-settings-example-5" class="slide5-settings-example" hidden>
+                  <div id="slide5-settings-char-5" class="slide5-settings-char"></div>
+                  <div id="slide5-settings-pinyin-5" class="slide5-settings-pinyin"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const el = (id) => document.getElementById(id);
+
+    const state = {
+      slide1Records: [],
+      slide5Records: [],
+      currentIndex: -1,
+      charWriter: null,
+      animWriter: null,
+      paused: false,
+      animating: false,
+      speed: 1,
+      slide2Items: [],
+      dragIndex: -1,
+      slide2Animating: false,
+      slide2TrackIndex: 0,
+      slide4Items: [],
+      slide4DragIndex: -1,
+      slide4Animating: false,
+      slide4TrackIndex: 0,
+      slide3StartIndex: 0,
+      slide5Index: 0
+    };
+    const LS_SLIDE2_KEY = "hanzi_slide2_order_v1";
+    const LS_SLIDE4_KEY = "hanzi_slide4_order_v1";
+    const SLIDE_BACKGROUNDS = {
+      1: "url(\"picture1.png\")",
+      2: "url(\"picture2.png\")",
+      3: "url(\"picture3.png\")",
+      4: "url(\"picture4.png\")",
+      5: "url(\"picture5.png\")"
+    };
+    const CAROUSEL_STEP = 700;
+    const CAROUSEL_BASE_X = -200;
+    const SLIDE3_VISIBLE_ROWS = 3;
+    const SLIDE3_TOTAL_ROWS = 7;
+    const SLIDE3_ROW_HEIGHT = 160;
+    const DEFAULT_SLIDE2_ITEMS = [
+      "strokes-dian.svg",
+      "strokes-heng.svg",
+      "strokes-henggou.svg",
+      "strokes-hengpie.svg",
+      "strokes-hengpiewanggou.svg",
+      "strokes-hengzhe.svg",
+      "strokes-hengzhegou.svg",
+      "strokes-hengzheti.svg",
+      "strokes-hengzhewan.svg",
+      "strokes-hengzhewangou.svg",
+      "strokes-hengzhexiegou.svg",
+      "strokes-hengzhezhe.svg",
+      "strokes-hengzhezhepie.svg",
+      "strokes-hengzhezhezhe.svg",
+      "strokes-hengzhezhezhegou.svg",
+      "strokes-na.svg",
+      "strokes-pie.svg",
+      "strokes-piedian.svg",
+      "strokes-piezhe.svg",
+      "strokes-shu.svg",
+      "strokes-shugou.svg",
+      "strokes-shuti.svg",
+      "strokes-shuwan.svg",
+      "strokes-shuwangou.svg",
+      "strokes-shuzhe.svg",
+      "strokes-shuzhepie.svg",
+      "strokes-shuzhezhe.svg",
+      "strokes-shuzhezhegou.svg",
+      "strokes-ti.svg",
+      "strokes-wangou.svg",
+      "strokes-xiegou.svg"
+    ];
+    const DEFAULT_SLIDE4_ITEMS = Array.from({ length: 11 }, (_, i) => `${i + 1}.png`);
+    const SLIDE4_CHARACTERS_BY_FILE = {
+      "1.png": ["姐", "明", "你"],
+      "2.png": ["班", "假", "做"],
+      "3.png": ["岁", "要", "早"],
+      "4.png": ["复", "高", "黄"],
+      "5.png": ["国", "四", "因"],
+      "6.png": ["句", "可", "式"],
+      "7.png": ["病", "店", "后"],
+      "8.png": ["边", "道", "过"],
+      "9.png": ["同", "问", "月"],
+      "10.png": ["画", "去", "凶"],
+      "11.png": ["区", "巨", "匹"]
+    };
+
+    function setStatus(msg) {
+      el("status").textContent = msg;
+    }
+
+    function switchSlide(slideNo) {
+      const maxSlides = 5;
+      const scene = el("scene");
+      const targetSlide = Math.min(Math.max(slideNo, 1), maxSlides);
+      for (let i = 1; i <= maxSlides; i++) {
+        el(`div_slide${i}`)?.classList.toggle("active", i === targetSlide);
+      }
+      const bg = SLIDE_BACKGROUNDS[targetSlide] || SLIDE_BACKGROUNDS[1];
+      scene.style.backgroundImage = bg;
+      mountSharedNavButtons(targetSlide);
+      updateSharedNavButtons(targetSlide);
+      document.querySelectorAll(".slide-switch").forEach((btn) => {
+        const target = Number(btn.dataset.slide || "1");
+        btn.classList.toggle("active", target === targetSlide);
+      });
+    }
+
+    function mountSharedNavButtons(slideNo) {
+      const prev = el("prevBtn2");
+      const next = el("nextBtn2");
+      if (!prev || !next) return;
+      let parent = el("div_settings2");
+      if (slideNo === 3) parent = el("div_settings3");
+      if (slideNo === 4) parent = el("div_settings4");
+      if (!parent) return;
+      if (prev.parentElement !== parent) parent.appendChild(prev);
+      if (next.parentElement !== parent) parent.appendChild(next);
+    }
+
+    function updateSlide3TablePosition() {
+      const maxStart = Math.max(0, SLIDE3_TOTAL_ROWS - SLIDE3_VISIBLE_ROWS);
+      state.slide3StartIndex = Math.min(Math.max(state.slide3StartIndex, 0), maxStart);
+      const track = el("rulesTableTrack");
+      if (track) {
+        const y = -(state.slide3StartIndex * SLIDE3_ROW_HEIGHT);
+        track.style.transform = `translateY(${y}px)`;
+      }
+    }
+
+    function setNavIconsForSlide(slideNo) {
+      const prevIcon = el("prevBtn2Icon");
+      const nextIcon = el("nextBtn2Icon");
+      if (!prevIcon || !nextIcon) return;
+      if (slideNo === 3) {
+        prevIcon.setAttribute("points", "10,70 50,30 90,70");
+        nextIcon.setAttribute("points", "10,30 50,70 90,30");
+      } else {
+        prevIcon.setAttribute("points", "70,10 30,50 70,90");
+        nextIcon.setAttribute("points", "30,10 70,50 30,90");
+      }
+    }
+
+    function updateSharedNavButtons(slideNo) {
+      const prev = el("prevBtn2");
+      const next = el("nextBtn2");
+      const show = slideNo === 2 || slideNo === 3 || slideNo === 4;
+      if (!prev || !next) return;
+      prev.hidden = !show;
+      next.hidden = !show;
+      setNavIconsForSlide(slideNo);
+      if (!show) {
+        prev.disabled = false;
+        next.disabled = false;
+        return;
+      }
+      if (slideNo === 3) {
+        const maxStart = Math.max(0, SLIDE3_TOTAL_ROWS - SLIDE3_VISIBLE_ROWS);
+        prev.setAttribute("aria-label", "Scroll up rules table");
+        next.setAttribute("aria-label", "Scroll down rules table");
+        prev.disabled = state.slide3StartIndex <= 0;
+        next.disabled = state.slide3StartIndex >= maxStart;
+      } else if (slideNo === 4) {
+        prev.setAttribute("aria-label", "Previous character structure icon");
+        next.setAttribute("aria-label", "Next character structure icon");
+        prev.disabled = false;
+        next.disabled = false;
+      } else {
+        prev.setAttribute("aria-label", "Previous stroke icon");
+        next.setAttribute("aria-label", "Next stroke icon");
+        prev.disabled = false;
+        next.disabled = false;
+      }
+    }
+
+    function scrollSlide3(direction) {
+      const maxStart = Math.max(0, SLIDE3_TOTAL_ROWS - SLIDE3_VISIBLE_ROWS);
+      const next = Math.min(Math.max(state.slide3StartIndex + direction, 0), maxStart);
+      if (next === state.slide3StartIndex) return;
+      state.slide3StartIndex = next;
+      updateSlide3TablePosition();
+      updateSharedNavButtons(3);
+    }
+
+    function normalizeSlide2Items(list) {
+      const seen = new Set();
+      const out = [];
+      list.forEach((name) => {
+        if (typeof name !== "string" || !name.endsWith(".svg")) return;
+        if (seen.has(name)) return;
+        seen.add(name);
+        out.push(name);
+      });
+      return out;
+    }
+
+    function normalizeSlide4Items(list) {
+      const seen = new Set();
+      const out = [];
+      list.forEach((name) => {
+        if (typeof name !== "string" || !name.endsWith(".png")) return;
+        if (seen.has(name)) return;
+        seen.add(name);
+        out.push(name);
+      });
+      return out;
+    }
+
+    function loadSlide2Items() {
+      try {
+        const raw = localStorage.getItem(LS_SLIDE2_KEY);
+        if (!raw) return [...DEFAULT_SLIDE2_ITEMS];
+        const parsed = JSON.parse(raw);
+        const cleaned = Array.isArray(parsed) ? normalizeSlide2Items(parsed) : [];
+        return cleaned.length ? cleaned : [...DEFAULT_SLIDE2_ITEMS];
+      } catch (_err) {
+        return [...DEFAULT_SLIDE2_ITEMS];
+      }
+    }
+
+    function saveSlide2Items() {
+      try {
+        localStorage.setItem(LS_SLIDE2_KEY, JSON.stringify(state.slide2Items));
+      } catch (_err) {
+        // ignore
+      }
+    }
+
+    function slide2Src(name) {
+      return `strokes/${name}`;
+    }
+
+    function loadSlide4Items() {
+      try {
+        const raw = localStorage.getItem(LS_SLIDE4_KEY);
+        if (!raw) return [...DEFAULT_SLIDE4_ITEMS];
+        const parsed = JSON.parse(raw);
+        const cleaned = Array.isArray(parsed) ? normalizeSlide4Items(parsed) : [];
+        return cleaned.length ? cleaned : [...DEFAULT_SLIDE4_ITEMS];
+      } catch (_err) {
+        return [...DEFAULT_SLIDE4_ITEMS];
+      }
+    }
+
+    function saveSlide4Items() {
+      try {
+        localStorage.setItem(LS_SLIDE4_KEY, JSON.stringify(state.slide4Items));
+      } catch (_err) {
+        // ignore
+      }
+    }
+
+    function slide4Src(name) {
+      return `Structures/${name}`;
+    }
+
+    function mod(n, m) {
+      return ((n % m) + m) % m;
+    }
+
+    function setCarouselX(withTransition) {
+      const track = el("stroke_carousel_track");
+      track.style.transition = withTransition ? "transform 280ms ease-in-out" : "none";
+      const x = CAROUSEL_BASE_X - (state.slide2TrackIndex * CAROUSEL_STEP);
+      track.style.transform = `translateX(${x}px)`;
+    }
+
+    function updateCarouselOpacities() {
+      const track = el("stroke_carousel_track");
+      const cards = Array.from(track.children);
+      if (!cards.length) return;
+      const centerAbs = state.slide2TrackIndex + 1;
+      cards.forEach((card, i) => {
+        if (i === centerAbs) {
+          card.style.opacity = "1";
+        } else if (i === centerAbs - 1 || i === centerAbs + 1) {
+          card.style.opacity = "0.2";
+        } else {
+          card.style.opacity = "0.35";
+        }
+      });
+    }
+
+    function normalizeTrackIndex() {
+      const n = state.slide2Items.length;
+      if (!n) return;
+      if (state.slide2TrackIndex >= n * 2) state.slide2TrackIndex -= n;
+      if (state.slide2TrackIndex < n) state.slide2TrackIndex += n;
+    }
+
+    function getCenterBaseIndex() {
+      const n = state.slide2Items.length;
+      if (!n) return 0;
+      const leftBase = mod(state.slide2TrackIndex, n);
+      return mod(leftBase + 1, n);
+    }
+
+    function centerItemName() {
+      const n = state.slide2Items.length;
+      if (!n) return "";
+      return state.slide2Items[getCenterBaseIndex()] || "";
+    }
+
+    function buildSlide2Track() {
+      const track = el("stroke_carousel_track");
+      track.innerHTML = "";
+      const items = state.slide2Items;
+      if (!items.length) return;
+      const repeated = [...items, ...items, ...items];
+      repeated.forEach((name, i) => {
+        const card = document.createElement("div");
+        card.className = "carousel-item";
+        card.style.left = `${i * CAROUSEL_STEP}px`;
+        const svg = document.createElement("div");
+        svg.className = "carousel-svg";
+        const src = slide2Src(name);
+        svg.style.webkitMaskImage = `url("${src}")`;
+        svg.style.maskImage = `url("${src}")`;
+        card.appendChild(svg);
+        track.appendChild(card);
+      });
+      state.slide2TrackIndex = items.length; // middle copy, left slot at first item
+      setCarouselX(false);
+      updateCarouselOpacities();
+    }
+
+    function renderSlide2IconLists() {
+      const grid = el("iconGrid2");
+      grid.innerHTML = "";
+
+      state.slide2Items.forEach((name, idx) => {
+        const b = document.createElement("button");
+          b.className = "svg-icon-btn" + (name === centerItemName() ? " active" : "");
+        b.draggable = true;
+        b.dataset.index = String(idx);
+        b.title = name;
+        b.setAttribute("aria-label", name);
+        const icon = document.createElement("div");
+        icon.className = "svg-icon";
+        const src = slide2Src(name);
+        icon.style.webkitMaskImage = `url("${src}")`;
+        icon.style.maskImage = `url("${src}")`;
+        b.appendChild(icon);
+
+        b.addEventListener("click", () => {
+          const n = state.slide2Items.length;
+          if (!n) return;
+          const targetLeft = mod(idx - 1, n);
+          state.slide2TrackIndex = n + targetLeft;
+          setCarouselX(false);
+          updateCarouselOpacities();
+          renderSlide2IconLists();
+        });
+
+        b.addEventListener("dragstart", () => {
+          state.dragIndex = idx;
+        });
+
+        b.addEventListener("dragover", (ev) => {
+          ev.preventDefault();
+        });
+
+        b.addEventListener("drop", () => {
+          const from = state.dragIndex;
+          const to = idx;
+          if (from < 0 || to < 0 || from === to) return;
+            const keepCenter = centerItemName();
+            const arr = [...state.slide2Items];
+            const [moved] = arr.splice(from, 1);
+            arr.splice(to, 0, moved);
+            state.slide2Items = arr;
+            state.dragIndex = -1;
+            saveSlide2Items();
+            buildSlide2Track();
+            const n = state.slide2Items.length;
+            const centerPos = state.slide2Items.indexOf(keepCenter);
+            if (n > 0 && centerPos >= 0) {
+              const targetLeft = mod(centerPos - 1, n);
+              state.slide2TrackIndex = n + targetLeft;
+              setCarouselX(false);
+            }
+            updateCarouselOpacities();
+            renderSlide2IconLists();
+          });
+
+        grid.appendChild(b);
+      });
+    }
+
+    function animateSlide2(direction) {
+      if (state.slide2Animating) return;
+      if (!state.slide2Items.length) return;
+      state.slide2Animating = true;
+      state.slide2TrackIndex += direction > 0 ? 1 : -1;
+      setCarouselX(true);
+      const track = el("stroke_carousel_track");
+
+      const onDone = () => {
+        track.removeEventListener("transitionend", onDone);
+        normalizeTrackIndex();
+        setCarouselX(false);
+        updateCarouselOpacities();
+        renderSlide2IconLists();
+        state.slide2Animating = false;
+      };
+      track.addEventListener("transitionend", onDone, { once: true });
+    }
+
+    function initSlide2() {
+      state.slide2Items = loadSlide2Items();
+      buildSlide2Track();
+      renderSlide2IconLists();
+    }
+
+    function setSlide4CarouselX(withTransition) {
+      const track = el("structure_carousel_track");
+      track.style.transition = withTransition ? "transform 280ms ease-in-out" : "none";
+      const x = CAROUSEL_BASE_X - (state.slide4TrackIndex * CAROUSEL_STEP);
+      track.style.transform = `translateX(${x}px)`;
+    }
+
+    function updateSlide4CarouselOpacities() {
+      const track = el("structure_carousel_track");
+      const cards = Array.from(track.children);
+      if (!cards.length) return;
+      const centerAbs = state.slide4TrackIndex + 1;
+      cards.forEach((card, i) => {
+        if (i === centerAbs) {
+          card.style.opacity = "1";
+        } else if (i === centerAbs - 1 || i === centerAbs + 1) {
+          card.style.opacity = "0.2";
+        } else {
+          card.style.opacity = "0.35";
+        }
+      });
+    }
+
+    function normalizeSlide4TrackIndex() {
+      const n = state.slide4Items.length;
+      if (!n) return;
+      if (state.slide4TrackIndex >= n * 2) state.slide4TrackIndex -= n;
+      if (state.slide4TrackIndex < n) state.slide4TrackIndex += n;
+    }
+
+    function getSlide4CenterBaseIndex() {
+      const n = state.slide4Items.length;
+      if (!n) return 0;
+      const leftBase = mod(state.slide4TrackIndex, n);
+      return mod(leftBase + 1, n);
+    }
+
+    function slide4CenterItemName() {
+      const n = state.slide4Items.length;
+      if (!n) return "";
+      return state.slide4Items[getSlide4CenterBaseIndex()] || "";
+    }
+
+    function logSlide4Debug() {
+      const center = slide4CenterItemName();
+      const src = center ? slide4Src(center) : "";
+      console.log("[Slide4]", {
+        itemsLength: state.slide4Items.length,
+        trackIndex: state.slide4TrackIndex,
+        centeredFilename: center,
+        imageSrc: src
+      });
+    }
+
+    function updateSlide4CharacterDisplay() {
+      const target = el("slide4CharValue");
+      if (!target) return;
+      const name = slide4CenterItemName();
+      const value = SLIDE4_CHARACTERS_BY_FILE[name];
+
+      if (!value) {
+        target.textContent = "-";
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        target.textContent = value.join("  ");
+      } else {
+        target.textContent = value;
+      }
+    }
+
+    function buildSlide4Track() {
+      const track = el("structure_carousel_track");
+      track.innerHTML = "";
+      const items = state.slide4Items;
+      if (!items.length) return;
+      const repeated = [...items, ...items, ...items];
+      repeated.forEach((name, i) => {
+        const card = document.createElement("div");
+        card.className = "carousel-item";
+        card.style.left = `${i * CAROUSEL_STEP}px`;
+        const img = document.createElement("img");
+        const src = slide4Src(name);
+        img.src = src;
+        img.alt = "";
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "contain";
+        img.style.pointerEvents = "none";
+        card.appendChild(img);
+        track.appendChild(card);
+      });
+      state.slide4TrackIndex = items.length;
+      setSlide4CarouselX(false);
+      updateSlide4CarouselOpacities();
+      updateSlide4CharacterDisplay();
+      logSlide4Debug();
+    }
+
+    function renderSlide4IconLists() {
+      const grid = el("iconGrid4");
+      grid.innerHTML = "";
+      updateSlide4CharacterDisplay();
+
+      state.slide4Items.forEach((name, idx) => {
+        const b = document.createElement("button");
+        b.className = "svg-icon-btn" + (name === slide4CenterItemName() ? " active" : "");
+        b.draggable = true;
+        b.dataset.index = String(idx);
+        b.title = name;
+        b.setAttribute("aria-label", name);
+        const icon = document.createElement("div");
+        icon.className = "svg-icon";
+        const src = slide4Src(name);
+        icon.style.background = `center / contain no-repeat url("${src}")`;
+        b.appendChild(icon);
+
+        b.addEventListener("click", () => {
+          const n = state.slide4Items.length;
+          if (!n) return;
+          const targetLeft = mod(idx - 1, n);
+          state.slide4TrackIndex = n + targetLeft;
+          setSlide4CarouselX(false);
+          updateSlide4CarouselOpacities();
+          logSlide4Debug();
+          renderSlide4IconLists();
+        });
+
+        b.addEventListener("dragstart", () => {
+          state.slide4DragIndex = idx;
+        });
+
+        b.addEventListener("dragover", (ev) => {
+          ev.preventDefault();
+        });
+
+        b.addEventListener("drop", () => {
+          const from = state.slide4DragIndex;
+          const to = idx;
+          if (from < 0 || to < 0 || from === to) return;
+          const keepCenter = slide4CenterItemName();
+          const arr = [...state.slide4Items];
+          const [moved] = arr.splice(from, 1);
+          arr.splice(to, 0, moved);
+          state.slide4Items = arr;
+          state.slide4DragIndex = -1;
+          saveSlide4Items();
+          buildSlide4Track();
+          const n = state.slide4Items.length;
+          const centerPos = state.slide4Items.indexOf(keepCenter);
+          if (n > 0 && centerPos >= 0) {
+            const targetLeft = mod(centerPos - 1, n);
+            state.slide4TrackIndex = n + targetLeft;
+            setSlide4CarouselX(false);
+          }
+          updateSlide4CarouselOpacities();
+          logSlide4Debug();
+          renderSlide4IconLists();
+        });
+
+        grid.appendChild(b);
+      });
+    }
+
+    function animateSlide4(direction) {
+      if (state.slide4Animating) return;
+      if (!state.slide4Items.length) return;
+      state.slide4Animating = true;
+      state.slide4TrackIndex += direction > 0 ? 1 : -1;
+      setSlide4CarouselX(true);
+      const track = el("structure_carousel_track");
+
+      const onDone = () => {
+        track.removeEventListener("transitionend", onDone);
+        normalizeSlide4TrackIndex();
+        setSlide4CarouselX(false);
+        updateSlide4CarouselOpacities();
+        logSlide4Debug();
+        renderSlide4IconLists();
+        state.slide4Animating = false;
+      };
+      track.addEventListener("transitionend", onDone, { once: true });
+    }
+
+    function initSlide4() {
+      state.slide4Items = loadSlide4Items();
+      buildSlide4Track();
+      renderSlide4IconLists();
+    }
+
+    function initSlide3() {
+      state.slide3StartIndex = 0;
+      updateSlide3TablePosition();
+    }
+
+    function syncPauseButton() {
+      const btn = el("pauseBtn");
+      btn.textContent = state.paused ? "Resume" : "Pause";
+      btn.disabled = !state.animating || !state.animWriter;
+    }
+
+    function fitScene() {
+      const viewportW = window.innerWidth;
+      const viewportH = window.innerHeight;
+      const baseW = 2650;
+      const baseH = 1440;
+      const scale = Math.min(viewportW / baseW, viewportH / baseH);
+      const yOffset = 10;
+      const scene = el("scene");
+      scene.style.transform = `translateY(${yOffset}px) scale(${scale})`;
+    }
+
+    function sanitizeChar(s) {
+      const t = (s || "").trim();
+      return t ? [...t][0] : "";
+    }
+
+    function parseCSV(text) {
+      const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      if (lines.length < 2) return [];
+
+      const parseLine = (line) => {
+        const out = [];
+        let cur = "";
+        let q = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            if (q && line[i + 1] === '"') {
+              cur += '"';
+              i++;
+            } else {
+              q = !q;
+            }
+          } else if (ch === "," && !q) {
+            out.push(cur.trim());
+            cur = "";
+          } else {
+            cur += ch;
+          }
+        }
+        out.push(cur.trim());
+        return out;
+      };
+
+      const headers = parseLine(lines[0]).map((h) => h.replace(/^\uFEFF/, "").trim().toLowerCase());
+      const idx = {
+        char: headers.findIndex((h) => ["char", "character", "hanzi", "zi", "word"].includes(h)),
+        zh: headers.findIndex((h) => ["pinyin", "pinyin_latin", "latin", "zh"].includes(h)),
+        ar: headers.findIndex((h) => ["arabic", "pinyin_arabic", "ar"].includes(h)),
+        tr: headers.findIndex((h) => ["translation", "english", "meaning", "tr"].includes(h)),
+        sc: headers.findIndex((h) => h === "sc")
+      };
+
+      if (idx.char < 0) {
+        // Fallback: first column is character.
+        idx.char = 0;
+      }
+
+      const records = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseLine(lines[i]);
+        const rawRecord = {};
+        headers.forEach((h, colIdx) => {
+          if (!h) return;
+          rawRecord[h] = (cols[colIdx] || "").trim();
+        });
+        const fallbackChar = idx.sc >= 0 ? (cols[idx.sc] || "") : "";
+        const character = sanitizeChar(cols[idx.char] || fallbackChar || "");
+        if (!character && !rawRecord.sc) continue;
+        records.push({
+          ...rawRecord,
+          character,
+          zh: idx.zh >= 0 ? (cols[idx.zh] || "") : "",
+          ar: idx.ar >= 0 ? (cols[idx.ar] || "") : "",
+          tr: idx.tr >= 0 ? (cols[idx.tr] || "") : ""
+        });
+      }
+
+      return records;
+    }
+
+    function makeWriter(targetId, character, extra = {}) {
+      const target = el(targetId);
+      target.innerHTML = "";
+      return HanziWriter.create(target, character, {
+        width: target.clientWidth,
+        height: target.clientHeight,
+        padding: 12,
+        strokeAnimationSpeed: state.speed,
+        delayBetweenStrokes: 180,
+        strokeColor: "#163E64",
+        radicalColor: "#163E64",
+        outlineColor: "#E8EEF1",
+        showOutline: true,
+        strokeWidth: 58,
+        ...extra
+      });
+    }
+
+    function renderInfo(rec) {
+      el("zhText").textContent = rec?.zh || "-";
+      el("arText").textContent = rec?.ar || "-";
+      el("trText").textContent = rec?.tr || "-";
+    }
+
+    function strokePathToPNG(strokes, upToIndex) {
+      const size = 140;
+      const pad = 10;
+      const drawSize = size - (pad * 2);
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return "";
+
+      ctx.translate(pad, size - pad);
+      ctx.scale(drawSize / 1024, -(drawSize / 1024));
+      for (let i = 0; i <= upToIndex; i++) {
+        const d = strokes[i];
+        if (!d) continue;
+        ctx.fillStyle = i === upToIndex ? "#E97132" : "#163E64";
+        const path = new Path2D(d);
+        ctx.fill(path);
+      }
+      return canvas.toDataURL("image/png");
+    }
+
+    function renderStrokeStrip(data) {
+      const host = el("strokeList");
+      host.innerHTML = "";
+      const strokes = Array.isArray(data?.strokes) ? data.strokes : [];
+      strokes.forEach((_d, i) => {
+        const img = document.createElement("img");
+        img.className = "stroke-item";
+        img.alt = `stroke-${i + 1}`;
+        img.src = strokePathToPNG(strokes, i);
+        host.appendChild(img);
+      });
+    }
+
+    function rebuildAnimOverlay() {
+      if (state.currentIndex < 0) return;
+      const rec = state.slide1Records[state.currentIndex];
+      if (!rec) return Promise.resolve();
+      let resolveReady;
+      const ready = new Promise((resolve) => { resolveReady = resolve; });
+      state.animWriter = makeWriter("animTarget", rec.character, {
+        strokeColor: "#E97132",
+        radicalColor: "#E97132",
+        outlineColor: "#E8EEF1",
+        showCharacter: false,
+        showOutline: true,
+        onLoadCharDataSuccess: (data) => {
+          renderStrokeStrip(data);
+          resolveReady();
+        },
+        onLoadCharDataError: () => resolveReady()
+      });
+      state.animWriter.hideCharacter();
+      state.animWriter.showOutline();
+      return ready;
+    }
+
+    function renderCharButtons() {
+      const host = el("charButtons");
+      host.innerHTML = "";
+      state.slide1Records.forEach((rec, idx) => {
+        const b = document.createElement("button");
+        b.className = "char-btn" + (idx === state.currentIndex ? " active" : "");
+        b.textContent = rec.character;
+        b.addEventListener("click", () => loadRecord(idx));
+        host.appendChild(b);
+      });
+    }
+
+    function getRecordField(rec, keys) {
+      if (!rec) return "";
+      const map = {};
+      Object.keys(rec).forEach((k) => {
+        map[k.toLowerCase()] = rec[k];
+      });
+      for (const key of keys) {
+        const value = map[key.toLowerCase()];
+        if (value == null) continue;
+        const text = String(value).trim();
+        if (text) return text;
+      }
+      return "";
+    }
+
+    function normalizeSearchText(value) {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function searchSlide1(raw) {
+      const needle = normalizeSearchText(raw);
+      if (!needle) return;
+      const idx = state.slide1Records.findIndex((rec) => {
+        const candidates = [
+          rec.character,
+          rec.zh,
+          rec.ar,
+          rec.tr
+        ];
+        return candidates.some((v) => normalizeSearchText(v).includes(needle));
+      });
+      if (idx < 0 || idx === state.currentIndex) return;
+      loadRecord(idx);
+    }
+
+    function renderSlide5Record(index) {
+      const rec = state.slide5Records[index];
+      if (!rec) {
+        el("div_sc").textContent = "-";
+        el("div_tc").textContent = "";
+        el("div_variant").textContent = "";
+        el("div_variant").classList.remove("stacked");
+        el("div_colloquial-name").textContent = "";
+        el("div_colloquial-pinyin-zh").textContent = "";
+        el("div_colloquial-pinyin-ar").textContent = "";
+        for (let i = 1; i <= 5; i++) {
+          el(`div_example-${i}`).textContent = "";
+          el(`slide5-settings-char-${i}`).textContent = "";
+          el(`slide5-settings-pinyin-${i}`).textContent = "";
+          el(`slide5-settings-example-${i}`).hidden = true;
+        }
+        return;
+      }
+
+      const sc = getRecordField(rec, ["sc"]) || rec.character || "-";
+      el("div_sc").textContent = sc;
+      el("div_tc").textContent = getRecordField(rec, ["tc"]);
+      const variantRaw = getRecordField(rec, ["variant", "variants"]);
+      const variantHost = el("div_variant");
+      const variantParts = variantRaw.split(",").map((v) => v.trim()).filter(Boolean);
+      if (variantParts.length > 1) {
+        variantHost.classList.add("stacked");
+        variantHost.innerHTML = variantParts.map((v) => `<div>${v}</div>`).join("");
+      } else {
+        variantHost.classList.remove("stacked");
+        variantHost.textContent = variantParts[0] || "";
+      }
+      el("div_colloquial-name").textContent = getRecordField(rec, ["colloquial-name"]);
+      el("div_colloquial-pinyin-zh").textContent = getRecordField(rec, ["colloquial-pinyin-zh"]);
+      el("div_colloquial-pinyin-ar").textContent = getRecordField(rec, ["colloquial-pinyin-ar"]);
+      for (let i = 1; i <= 5; i++) {
+        const example = getRecordField(rec, [`example-${i}`]);
+        const pinyinZh = getRecordField(rec, [`pinyin-zh-${i}`, `pinyin_zh-${i}`, `pinyinzh-${i}`]);
+        el(`div_example-${i}`).textContent = example;
+        el(`slide5-settings-char-${i}`).textContent = example;
+        el(`slide5-settings-pinyin-${i}`).textContent = pinyinZh;
+        el(`slide5-settings-example-${i}`).hidden = !example;
+      }
+    }
+
+    function renderSlide5Buttons() {
+      const host = el("radicalButtons");
+      host.innerHTML = "";
+      state.slide5Records.forEach((rec, idx) => {
+        const b = document.createElement("button");
+        b.className = "char-btn" + (idx === state.slide5Index ? " active" : "");
+        b.textContent = getRecordField(rec, ["sc"]) || rec.character || "-";
+        b.addEventListener("click", () => {
+          state.slide5Index = idx;
+          renderSlide5Buttons();
+          renderSlide5Record(idx);
+        });
+        host.appendChild(b);
+      });
+      if (!state.slide5Records.length) renderSlide5Record(-1);
+    }
+
+    function initSlide5() {
+      if (!state.slide5Records.length) {
+        state.slide5Index = 0;
+        renderSlide5Buttons();
+        renderSlide5Record(-1);
+        return;
+      }
+      state.slide5Index = Math.min(state.slide5Index, state.slide5Records.length - 1);
+      renderSlide5Buttons();
+      renderSlide5Record(state.slide5Index);
+    }
+
+    function searchSlide5ByPinyin(raw) {
+      const needle = normalizeSearchText(raw);
+      if (!needle) return;
+      const idx = state.slide5Records.findIndex((rec) => {
+        const pinyin = getRecordField(rec, ["pinyin-zh", "pinyin_zh", "pinyinzh"]);
+        return normalizeSearchText(pinyin).includes(needle);
+      });
+      if (idx < 0) return;
+      state.slide5Index = idx;
+      renderSlide5Buttons();
+      renderSlide5Record(idx);
+    }
+
+    async function loadRecord(index) {
+      const rec = state.slide1Records[index];
+      if (!rec) return;
+
+      state.currentIndex = index;
+      renderCharButtons();
+      renderInfo(rec);
+      setStatus(`Loading ${rec.character}...`);
+
+      state.paused = false;
+      state.animating = false;
+      syncPauseButton();
+
+      state.charWriter = makeWriter("charTarget", rec.character, {
+        strokeColor: "#163E64",
+        radicalColor: "#163E64",
+        showCharacter: true,
+        showOutline: false
+      });
+
+      state.charWriter.showCharacter();
+      await rebuildAnimOverlay();
+
+      setStatus(`Loaded ${rec.character}`);
+      syncPauseButton();
+    }
+
+    async function animateCurrent() {
+      if (!state.animWriter) return;
+      state.paused = false;
+      state.animating = true;
+      syncPauseButton();
+      setStatus("Animating...");
+
+      try {
+        await rebuildAnimOverlay();
+        state.animWriter.showOutline();
+        await state.animWriter.animateCharacter();
+        setStatus("Done");
+      } catch (_e) {
+        setStatus("Animation stopped");
+      } finally {
+        state.paused = false;
+        state.animating = false;
+        syncPauseButton();
+      }
+    }
+
+    function pauseResume() {
+      if (!state.animWriter || !state.animating) return;
+      if (!state.paused) {
+        if (typeof state.animWriter.pauseAnimation === "function") {
+          state.animWriter.pauseAnimation();
+          state.paused = true;
+          setStatus("Paused");
+        }
+      } else {
+        if (typeof state.animWriter.resumeAnimation === "function") {
+          state.animWriter.resumeAnimation();
+          state.paused = false;
+          setStatus("Animating...");
+        }
+      }
+      syncPauseButton();
+    }
+
+    function applySpeed() {
+      const speed = Number(el("speed").value);
+      state.speed = speed;
+      el("speedVal").textContent = `${speed.toFixed(2)}x`;
+
+      if (!state.animWriter) return;
+
+      if (typeof state.animWriter.setAnimationSpeed === "function") {
+        state.animWriter.setAnimationSpeed(speed);
+      } else if (state.currentIndex >= 0) {
+        // Compatibility fallback for builds without runtime speed setter.
+        rebuildAnimOverlay();
+      }
+    }
+
+    async function loadSlide1FromCSV() {
+      try {
+        const res = await fetch("writing-data.csv", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const parsed = parseCSV(text);
+        if (!parsed.length) throw new Error("writing-data.csv has no usable rows");
+        state.slide1Records = parsed;
+        await loadRecord(0);
+        renderCharButtons();
+        setStatus(`Loaded writing-data.csv (${parsed.length} items)`);
+        return true;
+      } catch (err) {
+        console.error("Slide 1 CSV load failed:", err);
+        state.slide1Records = [];
+        state.currentIndex = -1;
+        renderCharButtons();
+        renderInfo(null);
+        el("strokeList").innerHTML = "";
+        el("charTarget").innerHTML = "";
+        el("animTarget").innerHTML = "";
+        syncPauseButton();
+        setStatus(`Slide 1 load failed: ${err?.message || "unknown error"}`);
+        return false;
+      }
+    }
+
+    async function loadSlide5FromCSV() {
+      try {
+        const res = await fetch("radicals.csv", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const parsed = parseCSV(text);
+        if (!parsed.length) throw new Error("radicals.csv has no usable rows");
+        state.slide5Records = parsed;
+        state.slide5Index = 0;
+        initSlide5();
+        return true;
+      } catch (err) {
+        console.error("Slide 5 CSV load failed:", err);
+        state.slide5Records = [];
+        state.slide5Index = 0;
+        initSlide5();
+        setStatus(`Slide 5 load failed: ${err?.message || "unknown error"}`);
+        return false;
+      }
+    }
+
+    el("animateBtn").addEventListener("click", animateCurrent);
+    el("pauseBtn").addEventListener("click", pauseResume);
+    el("speed").addEventListener("input", applySpeed);
+    document.querySelectorAll(".slide-switch").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = Number(btn.dataset.slide || "1");
+        switchSlide(target);
+      });
+    });
+    el("prevBtn2").addEventListener("click", () => {
+      if (el("div_slide2")?.classList.contains("active")) {
+        animateSlide2(-1);
+      } else if (el("div_slide3")?.classList.contains("active")) {
+        scrollSlide3(-1);
+      } else if (el("div_slide4")?.classList.contains("active")) {
+        animateSlide4(-1);
+      }
+    });
+    el("nextBtn2").addEventListener("click", () => {
+      if (el("div_slide2")?.classList.contains("active")) {
+        animateSlide2(1);
+      } else if (el("div_slide3")?.classList.contains("active")) {
+        scrollSlide3(1);
+      } else if (el("div_slide4")?.classList.contains("active")) {
+        animateSlide4(1);
+      }
+    });
+    el("slide5Search").addEventListener("input", (e) => {
+      searchSlide5ByPinyin(e.target.value);
+    });
+    el("slide1Search").addEventListener("input", (e) => {
+      searchSlide1(e.target.value);
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+      if (event.code === "Space") {
+        event.preventDefault();
+        pauseResume();
+      }
+      if (event.code === "Digit1") switchSlide(1);
+      if (event.code === "Digit2") switchSlide(2);
+      if (event.code === "Digit3") switchSlide(3);
+      if (event.code === "Digit4") switchSlide(4);
+      if (event.code === "Digit5") switchSlide(5);
+      if (event.code === "ArrowLeft" && el("div_slide2")?.classList.contains("active")) {
+        event.preventDefault();
+        el("prevBtn2").click();
+      }
+      if (event.code === "ArrowLeft" && el("div_slide4")?.classList.contains("active")) {
+        event.preventDefault();
+        el("prevBtn2").click();
+      }
+      if (event.code === "ArrowRight" && el("div_slide2")?.classList.contains("active")) {
+        event.preventDefault();
+        el("nextBtn2").click();
+      }
+      if (event.code === "ArrowRight" && el("div_slide4")?.classList.contains("active")) {
+        event.preventDefault();
+        el("nextBtn2").click();
+      }
+      if (event.code === "ArrowUp" && el("div_slide3")?.classList.contains("active")) {
+        event.preventDefault();
+        el("prevBtn2").click();
+      }
+      if (event.code === "ArrowDown" && el("div_slide3")?.classList.contains("active")) {
+        event.preventDefault();
+        el("nextBtn2").click();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      fitScene();
+      if (state.currentIndex >= 0) {
+        // Keep writer dimensions accurate after viewport scale changes.
+        state.charWriter?.updateDimensions?.({ width: el("charTarget").clientWidth, height: el("charTarget").clientHeight });
+        state.animWriter?.updateDimensions?.({ width: el("animTarget").clientWidth, height: el("animTarget").clientHeight });
+      }
+    });
+
+    window.addEventListener("load", async () => {
+      fitScene();
+      applySpeed();
+      switchSlide(1);
+      initSlide2();
+      initSlide3();
+      initSlide4();
+      const [slide1Ok, slide5Ok] = await Promise.all([loadSlide1FromCSV(), loadSlide5FromCSV()]);
+      if (slide1Ok && slide5Ok) setStatus("Ready");
+    });
+  </script>
+</body>
+</html>
