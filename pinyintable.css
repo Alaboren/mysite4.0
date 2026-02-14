@@ -1,0 +1,896 @@
+/* =========================================
+   1. VARIABLES & FONTS
+   ========================================= */
+:root {
+  --header: #34495e;
+
+  /* Typography */
+  --font-latin: "Avenir Next", Avenir, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --font-ar: "Scheherazade New", serif;
+
+  /* Unified table sizing */
+  --cell-h: 52px;
+  --top-h: 34px;
+  --head-h: 46px;
+  --stub-w: 56px;
+  --hint-offset-y: 0px;
+
+  /* Overlay/table gutters (easy to flip) */
+  --overlay-pad: 36px;
+  --ov-2: var(--cell-h);           /* 1× cell */
+  --ov-1: calc(var(--cell-h) * 3); /* 3× cell */
+
+  /* Defaults (L-side). R-side overrides below. */
+  --overlay-gutter-left: var(--ov-2);
+  --overlay-gutter-right: var(--ov-1);
+
+  /* Finals button sizing (responsive; overridden on smaller screens) */
+  --final-size: 72px;
+  --final-font: 34px;
+}
+
+/* =========================================
+   2. GLOBAL RESETS & BODY THEME
+   ========================================= */
+* { box-sizing: border-box; }
+
+body {
+  /* Default Tone 1: Light Grey */
+  --bg: #f4f6f9;
+  --panel: rgba(255, 255, 255, 0.75);
+  --border: rgba(52, 73, 94, 0.12);
+
+  margin: 0;
+  background: var(--bg);
+
+  /* IMPORTANT:
+     Do NOT set body font-family here.
+     styles.css owns the header/footer typography.
+  */
+  transition: background-color 180ms ease;
+}
+
+/* Apply Latin font only to the pinyin page content */
+.page,
+.pinyin-grid-table,
+.finals,
+.final,
+.box,
+.box .label,
+.box .desc {
+  font-family: var(--font-latin);
+}
+
+/* Arabic / RTL text */
+[dir="rtl"],
+:lang(ar),
+body[data-pane="R"],
+[data-slot^="R"],
+[data-slot^="R"] .pinyin-grid-table,
+[data-slot^="R"] .pinyin-grid-table th,
+[data-slot^="R"] .pinyin-grid-table td {
+  font-family: var(--font-ar);
+}
+
+/* Tone Variants */
+body[data-tone="2"] { --bg: #dbe7ff; } /* Light Blue */
+body[data-tone="3"] { --bg: #ddf5e3; } /* Light Green */
+body[data-tone="4"] { --bg: #ffe1e1; } /* Light Red */
+
+
+/* =========================================
+   2.5 HEADER (match homepage logo spacing)
+   ========================================= */
+header[aria-label="ترويسة الصفحة"] {
+  width: 100%;
+}
+
+/* On the homepage, .logo is inside a max-width container.
+   On this page, constrain it so the two logos don't drift to the screen edges. */
+header[aria-label="ترويسة الصفحة"] .logo {
+  max-width: 1060px;
+  margin: 2rem auto 1.25rem;
+  padding: 0 24px;
+}
+
+/* Remove homepage-only extra spacing behaviors */
+header[aria-label="ترويسة الصفحة"] .logo {
+  animation: none;
+}
+
+@media (max-width: 600px) {
+  header[aria-label="ترويسة الصفحة"] .logo {
+    margin: 1.25rem auto 0.75rem;
+    padding: 0 12px;
+  }
+}
+/* =========================================
+   3. PAGE CONTAINER
+   ========================================= */
+.page {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.page-title { margin: 42px 0 10px; }
+
+.page-title h1 {
+  margin: 0;
+  text-align: center;
+
+  font-size: 72px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+
+  color: var(--header);
+}
+
+@media (max-width: 600px) {
+  .page-title { margin: 16px 0 8px; }
+  .page-title h1 { font-size: 44px; }
+}
+
+/* =========================================
+   4. MAIN GRID LAYOUT (T above L/R)
+   ========================================= */
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "t t"
+    "l r";
+
+  gap: 16px;
+  padding: 24px 0;
+  align-items: stretch;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  height: 100%;
+  width: 100%;
+  min-width: 0; /* prevents tables forcing column wider than 1fr */
+}
+
+.col-left   { grid-area: l; }
+.col-right  { grid-area: r; }
+.col-center { grid-area: t; }
+
+.col-center { align-self: stretch; }
+
+.col-center .box {
+  width: 100%;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.col-center .top-controls-card {
+  /* Parent should NOT control layout anymore.
+     The two wrappers (.top-controls-layout--row / --stack) control layout. */
+  width: 100%;
+  margin: 0;
+  display: block;
+}
+
+/* -----------------------------------------
+   Top controls: dual-layout system
+   ----------------------------------------- */
+
+.top-controls-layout { width: 100%; }
+
+/* default: show row, hide stacked */
+.top-controls-layout--row { display: flex; }
+.top-controls-layout--stack { display: none; }
+
+.top-controls-layout--row {
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px; /* {x} distance between finals and tones */
+}
+
+.top-controls-layout--stack {
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.top-controls-layout--stack .top-controls-finals,
+.top-controls-layout--stack .top-controls-tones {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* STACK: add extra space before the second row (tones) */
+.top-controls-layout--stack .top-controls-tones { margin-top: 10px; }
+
+/* STACK: force the actual row contents to center (override .finals default) */
+.top-controls-layout--stack .finals { justify-content: center; }
+.top-controls-layout--stack .tone-indicator { justify-content: center; }
+
+/* Manual overrides (JS can force it) */
+body[data-top-layout="row"] .top-controls-layout--row { display: flex; }
+body[data-top-layout="row"] .top-controls-layout--stack { display: none; }
+
+body[data-top-layout="stack"] .top-controls-layout--row { display: none; }
+body[data-top-layout="stack"] .top-controls-layout--stack { display: flex; }
+
+/* Auto switch ONLY at 1000px (no second switch) */
+@media (max-width: 1000px) {
+  body:not([data-top-layout]) .top-controls-layout--row { display: none; }
+  body:not([data-top-layout]) .top-controls-layout--stack { display: flex; }
+}
+
+.top-controls-finals { min-width: 0; }
+
+.top-controls-tones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.finals {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.final {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: var(--final-size);
+  height: var(--final-size);
+  padding: 0;
+  border-radius: 14px;
+
+  border: 2px solid rgba(47, 70, 86, 0.38);
+  background: #ffffff;
+  color: rgba(47, 70, 86, 0.95);
+
+  font-weight: 400;
+  font-size: var(--final-font);
+  line-height: 1;
+
+  cursor: pointer;
+  box-shadow: none;
+
+  user-select: none;
+  -webkit-user-select: none;
+
+  flex: 0 0 auto;
+
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    filter 140ms ease;
+}
+
+.final:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.88);
+  filter: none;
+}
+
+.final:active {
+  transform: translateY(0);
+  filter: none;
+}
+
+body[data-family="a"]  .final[data-family="a"],
+body[data-family="o"]  .final[data-family="o"],
+body[data-family="e"]  .final[data-family="e"],
+body[data-family="i"]  .final[data-family="i"],
+body[data-family="u"]  .final[data-family="u"],
+body[data-family="ü"]  .final[data-family="ü"] {
+  background: var(--header);
+  border-color: var(--header);
+  color: #ffffff;
+  outline: none;
+}
+
+.tone-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.tone-icon {
+  width: 78px;
+  height: 78px;
+
+  object-fit: contain;
+  display: block;
+
+  user-select: none;
+  -webkit-user-select: none;
+
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.18));
+}
+
+@media (max-width: 720px) {
+  :root {
+    --final-size: clamp(44px, 10vw, 60px);
+    --final-font: clamp(20px, 4.6vw, 28px);
+  }
+  .tone-icon { width: 64px; height: 64px; }
+}
+
+/* =========================================
+   4.2 TOP CHEVRONS (Left/Right)
+   ========================================= */
+.top-arrow {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  background: transparent;
+
+  display: none;
+
+  color: var(--header);
+  border-radius: 14px;
+
+  width: 100%;
+  height: 100%;
+
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+
+  transition: transform 120ms ease, background-color 120ms ease, filter 120ms ease;
+}
+
+.top-arrow:hover {
+  background: rgba(255, 255, 255, 0.22);
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.14));
+  transform: translateY(-1px);
+}
+
+.top-arrow:active {
+  transform: translateY(0);
+  filter: none;
+}
+
+.top-arrow svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  .top-arrow { display: inline-flex; }
+  .top-arrow svg { width: 26px; height: 26px; }
+}
+
+/* =========================================
+   5. INTERACTIVE CARDS (BOXES)
+   ========================================= */
+.box {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  min-height: 72px;
+
+  cursor: pointer;
+
+  transition: transform 240ms ease, opacity 240ms ease, box-shadow 240ms ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+[data-slot^="L"].box,
+[data-slot^="R"].box {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.box .label {
+  font-weight: 400;
+  color: rgba(47, 70, 86, 0.95);
+  margin-bottom: 6px;
+}
+
+.box .desc {
+  color: rgba(47, 70, 86, 0.85);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.box:not(.expanded):hover { transform: translateY(-2px); }
+
+/* =========================================
+   6. OVERLAY SYSTEM
+   ========================================= */
+.backdrop {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 180ms ease;
+  z-index: 1500;
+}
+
+body.overlay-open .backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.overlay-open .overlay-card:not(.expanded) {
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.overlay-card.expanded {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  width: min(1120px, 96vw);
+  height: min(820px, 88vh);
+  z-index: 2000;
+
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 26px;
+
+  padding: 28px 0;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+
+  outline: 1px solid rgba(255, 255, 255, 0.35);
+  overflow: auto;
+
+  will-change: box-shadow;
+  animation: modalShadow 180ms ease-out;
+}
+
+.overlay-card.expanded:hover { transform: translate(-50%, -50%); }
+
+.overlay-placeholder {
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px dashed rgba(47, 70, 86, 0.35);
+  border-radius: 16px;
+  min-height: 72px;
+}
+
+/* =========================================
+   7. PINYIN TABLE COMPONENT
+   ========================================= */
+.pinyin-grid { width: 100%; }
+
+.overlay-card.expanded .pinyin-grid {
+  padding:
+    var(--overlay-pad)
+    calc(var(--overlay-pad) + var(--overlay-gutter-right))
+    var(--overlay-pad)
+    calc(var(--overlay-pad) + var(--overlay-gutter-left));
+}
+
+.overlay-card.expanded[data-slot^="R"] .pinyin-grid {
+  --overlay-gutter-left: var(--ov-2);
+  --overlay-gutter-right: var(--ov-1);
+}
+
+.overlay-card.expanded[data-slot^="L"] .pinyin-grid {
+  --overlay-gutter-left: var(--ov-2);
+  --overlay-gutter-right: var(--ov-1);
+}
+
+.pinyin-grid-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+
+  overflow: hidden;
+  border-radius: 12px;
+  background: transparent;
+}
+
+[data-slot^="R"] .pinyin-grid-table { direction: rtl; }
+
+[data-slot^="R"] .pinyin-grid-table th,
+[data-slot^="R"] .pinyin-grid-table td { text-align: center; }
+
+.pinyin-grid-table th,
+.pinyin-grid-table td {
+  text-align: center;
+
+  padding: 12px 10px;
+  font-size: 18px;
+  line-height: 1;
+
+  color: rgba(47, 70, 86, 0.95);
+  border: 0;
+}
+
+.box:not(.expanded) .pinyin-grid-table th,
+.box:not(.expanded) .pinyin-grid-table td {
+  font-size: 14px;
+  padding: 10px 6px;
+}
+
+.box:not(.expanded) .pinyin-grid-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.overlay-card.expanded .pinyin-grid-table th,
+.overlay-card.expanded .pinyin-grid-table td {
+  padding: 0 18px;
+  height: var(--cell-h);
+  line-height: var(--cell-h);
+}
+
+.pinyin-grid-table thead tr.pinyin-grid-top th {
+  background: rgba(0, 0, 0, 0.18);
+  color: rgba(47, 70, 86, 0.9);
+  font-size: 13px;
+  font-weight: 400;
+  padding: 8px 8px;
+}
+
+.pinyin-grid-table thead tr.pinyin-grid-head th {
+  background: #e67e22;
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 20px;
+  padding: 12px 8px;
+}
+
+.pinyin-grid-table thead tr.pinyin-grid-head th.stub {
+  background: transparent;
+  color: transparent;
+}
+
+.overlay-card.expanded .pinyin-grid-table thead tr.pinyin-grid-top th,
+[data-slot="L1"] .pinyin-grid-table thead tr.pinyin-grid-top th,
+[data-slot="R1"] .pinyin-grid-table thead tr.pinyin-grid-top th {
+  background: transparent;
+}
+
+.overlay-card.expanded .pinyin-grid-table thead tr.pinyin-grid-top th {
+  height: var(--top-h);
+  line-height: var(--top-h);
+  padding: 0 10px;
+}
+
+.overlay-card.expanded .pinyin-grid-table thead tr.pinyin-grid-head th {
+  height: var(--head-h);
+  line-height: var(--head-h);
+  padding: 0 10px;
+}
+
+.pinyin-grid-table thead tr.pinyin-grid-head th:nth-child(2) { border-top-left-radius: 12px; }
+.pinyin-grid-table tbody tr:first-child th.stub { border-top-left-radius: 12px; }
+
+[data-slot^="R"] .pinyin-grid-table thead tr.pinyin-grid-head th:nth-child(2) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 12px;
+}
+
+.pinyin-grid-table thead tr.pinyin-grid-head th:nth-child(3) { border-top-left-radius: 12px; }
+[data-slot^="R"] .pinyin-grid-table thead tr.pinyin-grid-head th:nth-child(3) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 12px;
+}
+
+.pinyin-grid-table thead tr.pinyin-grid-head th:last-child { border-top-right-radius: 12px; }
+[data-slot^="R"] .pinyin-grid-table thead tr.pinyin-grid-head th:last-child {
+  border-top-right-radius: 0;
+  border-top-left-radius: 12px;
+}
+
+[data-slot^="R"] .pinyin-grid-table tbody tr:first-child th.stub {
+  border-top-left-radius: 0;
+  border-top-right-radius: 12px;
+}
+
+.pinyin-grid-table tbody tr:last-child th.stub { border-bottom-left-radius: 12px; }
+[data-slot^="R"] .pinyin-grid-table tbody tr:last-child th.stub {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 12px;
+}
+
+.pinyin-grid-table .stub { width: var(--stub-w); }
+
+.pinyin-grid-table thead th.stub { background: rgba(0, 0, 0, 0.18); }
+
+.pinyin-grid-table tbody th.stub {
+  background: var(--header);
+  color: #ffffff;
+
+  font-weight: 400;
+  font-size: 20px;
+
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.overlay-card.expanded .pinyin-grid-table tbody th.stub {
+  height: var(--cell-h);
+  line-height: var(--cell-h);
+}
+
+.pinyin-grid-table tbody tr:nth-child(odd) td { background: rgba(255, 255, 255, 0.92); }
+.pinyin-grid-table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.70); }
+
+.pinyin-grid-table tbody td { box-shadow: inset 0 -1px 0 rgba(47, 70, 86, 0.10); }
+
+[data-slot^="L"]:not([data-slot="L1"]):not(.expanded) .pinyin-grid-table thead,
+[data-slot^="R"]:not([data-slot="R1"]):not(.expanded) .pinyin-grid-table thead {
+  display: none;
+}
+
+.pinyin-grid-table th.hint-col,
+.pinyin-grid-table td.hint-col {
+  visibility: visible;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+
+  width: var(--cell-h);
+  min-width: var(--cell-h);
+}
+
+/* =========================================
+   9. ANIMATIONS & VISUALS
+   ========================================= */
+.penguin-sky {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.penguin {
+  position: absolute;
+  right: -260px;
+  top: 0;
+
+  opacity: 0.95;
+  pointer-events: none;
+  will-change: transform;
+
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+  animation: penguinRun var(--dur, 3000ms) linear forwards;
+}
+
+@keyframes penguinRun {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-100vw - 520px)); }
+}
+
+@keyframes modalShadow {
+  0%   { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22); }
+  70%  { box-shadow: 0 20px 56px rgba(0, 0, 0, 0.34); }
+  100% { box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35); }
+}
+
+@keyframes paneInFromLeft {
+  from { transform: translateX(-18px); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes paneInFromRight {
+  from { transform: translateX(18px); }
+  to   { transform: translateX(0); }
+}
+
+/* =========================================
+   10. MEDIA QUERIES
+   ========================================= */
+@media (max-width: 860px) {
+  .columns {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "t" "l";
+    gap: 14px;
+  }
+
+  body[data-pane="R"] .columns { grid-template-areas: "t" "r"; }
+
+  body.overlay-open .col-left,
+  body.overlay-open .col-right,
+  body.overlay-open .columns {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .col-left  { display: flex; }
+  .col-right { display: none; }
+
+  body[data-pane="R"] .col-left  { display: none; }
+  body[data-pane="R"] .col-right { display: flex; }
+
+  .col-left,
+  body[data-pane="R"] .col-right { will-change: transform; }
+
+  body:not([data-pane="R"]) .col-left { animation: paneInFromLeft 160ms ease-out; }
+  body[data-pane="R"] .col-right      { animation: paneInFromRight 160ms ease-out; }
+
+  body.overlay-open .col-left,
+  body.overlay-open .col-right { will-change: auto; }
+
+  body[data-pane="R"][data-pane-dir="left"] .col-right { animation: paneInFromLeft 160ms ease-out; }
+  body:not([data-pane="R"])[data-pane-dir="right"] .col-left { animation: paneInFromRight 160ms ease-out; }
+
+  .top-arrow { display: inline-flex; }
+
+  body:not([data-pane="R"]) .col-left .pinyin-grid {
+    width: calc(100% + var(--cell-h));
+    margin-left: calc(-1 * var(--cell-h));
+    margin-right: 0;
+  }
+
+  body[data-pane="R"] .col-right .pinyin-grid {
+    width: calc(100% + var(--cell-h));
+    margin-right: calc(-1 * var(--cell-h));
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .pinyin-grid-table th,
+  .pinyin-grid-table td { font-size: 16px; padding: 10px 6px; }
+
+  .pinyin-grid-table thead tr.pinyin-grid-head th,
+  .pinyin-grid-table tbody th.stub { font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .box,
+  .backdrop,
+  .overlay-card.expanded,
+  .penguin,
+  .col-left,
+  .col-right {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* =========================================
+   11. PHONE OPTIMIZATIONS (FIXED OVERLAY)
+   ========================================= */
+@media (max-width: 390px) {
+  :root {
+    --final-size: clamp(34px, 11vw, 46px);
+    --final-font: clamp(16px, 4.8vw, 22px);
+  }
+
+  .finals { gap: 8px; }
+
+  .tone-icon { width: 54px; height: 54px; }
+
+  .top-controls-layout--stack { gap: 14px; }
+  .top-controls-layout--stack .top-controls-tones { margin-top: 6px; }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --final-size: clamp(40px, 12vw, 56px);
+    --final-font: clamp(18px, 5vw, 26px);
+
+    --cell-h: 46px;
+    --stub-w: 42px;
+    --top-h: 30px;
+    --head-h: 40px;
+  }
+
+  .page { width: 100%; padding: 0 12px; }
+
+  .overlay-card.expanded {
+    --overlay-pad: 12px;
+    --overlay-gutter-left: 0px !important;
+    --overlay-gutter-right: 0px !important;
+
+    position: fixed;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+
+    transform: none !important;
+    top: 0 !important;
+    left: 0 !important;
+
+    border-radius: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+
+    overflow: hidden;
+  }
+
+  .overlay-card.expanded .pinyin-grid {
+    padding: var(--overlay-pad) 0 !important;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .overlay-card.expanded .pinyin-grid-table th,
+  .overlay-card.expanded .pinyin-grid-table td {
+    padding: 0 6px;
+    font-size: 15px;
+  }
+}
+
+/* Sticky header cells must be opaque so you don't see rows behind */
+.pinyin-grid-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+/* Make sure each header row has a real background */
+.pinyin-grid-table thead tr.pinyin-grid-top th { background: rgba(255,255,255,0.92); }
+.pinyin-grid-table thead tr.pinyin-grid-head th { background: #e67e22; z-index: 6; }
+
+/* =========================================
+   COLUMN PAGE INDICATOR (cycling for i/u)
+   ========================================= */
+.col-page-indicator {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px;
+  background: rgba(0,0,0,0.55);
+  border-radius: 20px;
+  z-index: 1100;
+}
+
+.col-page-bar {
+  width: 44px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.15);
+  overflow: hidden;
+  position: relative;
+}
+
+.col-page-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: #e67e22;
+  transition: left 0.25s ease, width 0.25s ease;
+}
+
+.col-page-bar[data-state="0"] .col-page-fill { left: 0;   width: 50%; }
+.col-page-bar[data-state="1"] .col-page-fill { left: 50%; width: 50%; }
+.col-page-bar[data-state="2"] .col-page-fill { left: 0;   width: 100%; }

@@ -1,0 +1,459 @@
+@font-face {
+    font-family: 'NotoKufiArabic';
+    src: url('fonts/NotoKufiArabic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'KaiTiCustom';
+    src: url('fonts/KaiTi Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BMDohyeon';
+    src: url('fonts/BMDohyeon-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-display: swap;
+}
+
+
+:root {
+    --ui-scale: 2;
+    --primary: #2c3e50;
+    --accent: #2c3e50;
+    --success: #2ecc71;
+    --error: #e74c3c;
+    --bg: #f4f6f9;
+    --card-w: calc(85px * var(--ui-scale));
+    --card-h: calc(120px * var(--ui-scale));
+    --grid-row-h: calc(70px * var(--ui-scale));
+    --grid-gap: calc(8px * var(--ui-scale));
+    --side-img-size: calc(55px * var(--ui-scale));
+}
+
+/* html font-size no longer scaled globally — rem values below
+   use calc(px * var(--ui-scale)) so the game looks the same while
+   the shared header/footer from style.css render at normal size. */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    margin: 0;
+    direction: ltr;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(32px * var(--ui-scale));
+}
+
+/* --- Grid Styling --- */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, calc(100px * var(--ui-scale)));
+    grid-template-rows: repeat(5, var(--grid-row-h));
+    gap: var(--grid-gap);
+    margin-bottom: calc(32px * var(--ui-scale));
+    direction: ltr;
+}
+
+.cell {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    user-select: none;
+    text-align: center;
+    font-size: calc(12.8px * var(--ui-scale));
+}
+
+.cell span {
+    font-family: 'BMDohyeon', sans-serif;
+}
+
+/* Tone color classes */
+.tone-1 { color: black; }
+.tone-2 { color: #3d5ec1; } /* blue */
+.tone-3 { color: #16a34a; } /* green */
+.tone-4 { color: #dc2626; } /* red */
+.tone-5 { color: #6b7280; } /* grey */
+
+.header {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    font-size: calc(13.6px * var(--ui-scale));
+    font-family: 'NotoKufiArabic', sans-serif;
+}
+
+.hidden-cell {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Feedback States */
+.flash-success { background-color: var(--success) !important; color: white; }
+.flash-error { background-color: var(--error) !important; color: white; }
+
+/* --- New Stacked Deck Styling --- */
+.deck-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    height: var(--card-h); /* Reserve height */
+}
+
+/* The Single Stack (Acts as Pile + Active Slot) */
+#single-stack {
+    position: relative; /* Anchor for absolute card positioning */
+    width: var(--card-w);
+    height: var(--card-h);
+    background: var(--primary);
+    border-radius: 12px;
+    border: 2px solid #34495e;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Stack effect */
+    box-shadow: 4px 4px 0px #bdc3c7, 8px 8px 0px #95a5a6;
+    transition: transform 0.1s;
+}
+
+#single-stack:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #bdc3c7, 6px 6px 0px #95a5a6;
+}
+
+/* When a card is active, the stack is just a placeholder underneath */
+#single-stack.has-card {
+    cursor: grab; /* Indicates draggable */
+    background: #bdc3c7; /* Dim the pile underneath */
+    box-shadow: none; /* Flatten pile visually when card is drawn */
+}
+
+/* Text on the empty pile */
+.stack-msg {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    pointer-events: none;
+}
+
+/* Force the card to sit exactly on the stack */
+.card-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: var(--card-w);
+    height: var(--card-h);
+    perspective: 900px;
+}
+
+/* --- Card Styling --- */
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card-wrapper.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid #ccc;
+}
+
+.card-front {
+    background-color: var(--accent);
+    color: white;
+    font-size: calc(19.2px * var(--ui-scale));
+}
+
+.card-back {
+    background-color: white;
+    transform: rotateY(180deg);
+    padding: 5px;
+}
+
+.chinese {
+    font-family: 'KaiTiCustom', serif;
+    font-size: calc(25.6px * var(--ui-scale));
+    margin-bottom: 5px;
+}
+.pinyin { font-size: calc(14.4px * var(--ui-scale)); color: #666; }
+
+.dragging { opacity: 0.5; }
+
+#finish-message {
+    margin-top: 10px;
+    font-size: calc(19.2px * var(--ui-scale));
+    text-align: center;
+}
+
+/* Body Flash Animations */
+@keyframes flashGreen {
+    0% { background-color: var(--bg); }
+    50% { background-color: rgba(46, 204, 113, 0.3); }
+    100% { background-color: var(--bg); }
+}
+
+@keyframes flashRed {
+    0% { background-color: var(--bg); }
+    50% { background-color: rgba(231, 76, 60, 0.3); }
+    100% { background-color: var(--bg); }
+}
+
+.body-flash-success { animation: flashGreen 0.6s ease-out; }
+.body-flash-error { animation: flashRed 0.6s ease-out; }
+
+.card-logo {
+    width: calc(42px * var(--ui-scale));
+    height: calc(42px * var(--ui-scale));
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
+
+/* =============================
+   Side Images (Left Column)
+   ============================= */
+
+.grid-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    direction: ltr;
+}
+
+.side-images {
+    display: flex;
+    flex-direction: column;
+    /* header row + gap + half of (row height - image size) */
+    margin-top: calc(var(--grid-row-h) + var(--grid-gap) + (var(--grid-row-h) - var(--side-img-size)) / 2);
+
+    /* distance between data-row centers minus image size */
+    gap: calc((var(--grid-row-h) + var(--grid-gap)) - var(--side-img-size));
+}
+
+.side-img {
+    width: var(--side-img-size);
+    height: var(--side-img-size);
+    object-fit: contain;
+}
+
+/* Responsive adjustment for side images */
+@media (max-width: 760px) {
+    :root {
+        --ui-scale: 1.25;
+        --grid-row-h: calc(70px * var(--ui-scale));
+        --grid-gap: calc(8px * var(--ui-scale));
+        --side-img-size: calc(45px * var(--ui-scale));
+    }
+    .grid-wrapper {
+        gap: 10px;
+    }
+}
+
+
+
+/* =============================
+   Toggle switch
+   ============================= */
+
+.toggle-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'NotoKufiArabic', sans-serif;
+    font-weight: 600;
+    align-self: flex-start;
+    margin-right: auto;
+}
+
+
+.toggle-label {
+    user-select: none;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+    transition: 0.18s ease;
+}
+
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    transition: 0.18s ease;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: rgba(44, 62, 80);
+    border-color: var(--accent);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+    transform: translateY(-50%) translateX(22px);
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+    outline: 2px solid rgba(44, 62, 80, 0.45);
+    outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+    .toggle-switch {
+        width: 46px;
+        height: 28px;
+    }
+
+    .toggle-slider::before {
+        height: 20px;
+        width: 20px;
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+        transform: translateY(-50%) translateX(18px);
+    }
+}
+
+
+/* =============================
+   Bottom Layout
+   ============================= */
+
+.bottom-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 25px;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 clamp(10px, 3vw, 40px);
+    gap: 0;
+}
+
+.bottom-left {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    order: 1;
+    align-items: flex-start;
+}
+
+.bottom-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: auto;
+    order: 2;
+}
+
+.score-board {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+
+
+/* =============================
+   Animal Mode (Tone Icons)
+   ============================= */‘
+
+.tone-pair {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: calc(19.2px * var(--ui-scale));
+    font-weight: 800;
+    opacity: 0.95;
+}
+
+.tone-plus {
+    font-family: 'BMDohyeon', sans-serif;
+    font-size: calc(17.6px * var(--ui-scale));
+}
+
+.tone-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+}
+
+.tone-animal {
+    width: calc(35px * var(--ui-scale));
+    height: calc(35px * var(--ui-scale));
+    object-fit: contain;
+    pointer-events: none;
+}
+
+/* Slightly enlarge animals for better visual balance */
+.cell .tone-symbol img {
+    transform: scale(1.05);
+}
+
+/* Responsive adjustment */
+@media (max-width: 760px) {
+    .tone-animal {
+        width: calc(26px * var(--ui-scale));
+        height: calc(26px * var(--ui-scale));
+    }
+}
+
+

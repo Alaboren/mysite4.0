@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="ألابورن — مولد تدريب عشوائي لتركيبات النطق الصيني" />
+  <title>مولدة هجاء الأصوات — ألابورن</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-logo.png">
+  <link rel="apple-touch-icon" href="icons/icon-logo.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/lottery.css">
+</head>
+
+<body class="page-wrapper">
+
+  <header class="page-header">
+    <a href="index.html"><img src="img/logo-light-ar.png" alt="ألابورن"></a>
+    <a href="index.html"><img src="img/logo-light-zh.png" alt="alaboRen"></a>
+  </header>
+
+  <main class="lottery-main">
+
+    <div class="slot-machine">
+
+      <!-- Settings gear -->
+      <button class="settings-gear" id="settings-btn" aria-label="الإعدادات">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+
+      <!-- Machine title -->
+      <div class="slot-label">مولدة هجاء الأصوات - 拼音</div>
+
+      <!-- Press / spin button -->
+      <div class="slot-press" id="spin-btn">اضغط</div>
+
+      <!-- Lights -->
+      <div class="lights-row" aria-hidden="true">
+        <div class="light"></div><div class="light"></div><div class="light"></div>
+        <div class="light"></div><div class="light"></div><div class="light"></div>
+        <div class="light"></div><div class="light"></div><div class="light"></div>
+        <div class="light"></div><div class="light"></div><div class="light"></div>
+        <div class="light"></div><div class="light"></div><div class="light"></div>
+        <div class="light"></div><div class="light"></div><div class="light"></div>
+        <div class="light"></div><div class="light"></div><div class="light"></div>
+        <div class="light"></div>
+      </div>
+
+      <!-- Reels -->
+      <div class="reels-area">
+        <div class="reel"><div class="strip" id="strip-tone"></div></div>
+        <div class="reel"><div class="strip" id="strip-cat"></div></div>
+        <div class="reel"><div class="strip" id="strip-final"></div></div>
+      </div>
+
+      <!-- Reel result labels -->
+      <div class="reel-names">
+        <div class="reel-name r1" id="val-final">-</div>
+        <div class="reel-name r2" id="val-cat">-</div>
+        <div class="reel-name r3" id="val-tone">-</div>
+      </div>
+
+    </div>
+
+    <!-- Counter -->
+    <div class="counter-bar">
+      <span id="rem-count">0</span> / <span id="total-count">0</span>
+      <span class="exhausted-msg" id="exhausted" style="display:none">انتهت جميع التركيبات!</span>
+    </div>
+
+  </main>
+
+  <!-- ===== RESULT OVERLAY ===== -->
+  <div class="lottery-overlay" id="result-overlay" aria-hidden="true">
+    <div class="lottery-overlay-panel result-panel">
+      <button class="lottery-overlay-close" id="result-close">&times;</button>
+      <h2 class="lottery-overlay-title" id="result-title">النتيجة</h2>
+      <div id="result-tables"></div>
+      <p class="result-meta" id="result-meta"></p>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS OVERLAY ===== -->
+  <div class="lottery-overlay" id="settings-overlay" aria-hidden="true">
+    <div class="lottery-overlay-panel settings-panel">
+      <button class="lottery-overlay-close" id="settings-close">&times;</button>
+      <h2 class="lottery-overlay-title">الإعدادات</h2>
+
+      <div class="settings-tabs">
+        <button class="tab-btn active" data-tab="tab-settings">إعدادات</button>
+        <button class="tab-btn" data-tab="tab-history">السجل</button>
+      </div>
+
+      <div class="tab-content active" id="tab-settings">
+        <div class="setting-group">
+          <div class="setting-row">
+            <label for="setting-spin-speed">سرعة الدوران</label>
+            <div class="setting-control">
+              <input type="range" id="setting-spin-speed" min="1" max="4" step="0.5">
+              <span class="setting-value" id="spin-speed-val">2s</span>
+            </div>
+          </div>
+          <div class="setting-row">
+            <label for="setting-reel-delay">تأخير توقف البكرات</label>
+            <div class="setting-control">
+              <input type="range" id="setting-reel-delay" min="200" max="1000" step="100">
+              <span class="setting-value" id="reel-delay-val">500ms</span>
+            </div>
+          </div>
+          <!-- Jackpot controls -->
+          <div class="setting-row">
+            <div class="setting-label-row">
+              <label for="setting-jackpot-enable">تفعيل الاستثناء</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="setting-jackpot-enable">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label-row">
+              <label for="setting-jackpot-only">وضع الاستثناء فقط</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="setting-jackpot-only">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+          </div>
+          <div class="setting-row">
+            <label for="setting-jackpot-prob">احتمال الاستثناء</label>
+            <div class="setting-control">
+              <input type="range" id="setting-jackpot-prob" min="0" max="100" step="5">
+              <span class="setting-value" id="jackpot-prob-val">50%</span>
+            </div>
+          </div>
+        </div>
+        <hr class="setting-divider">
+        <button class="btn-reset" id="btn-reset-from-settings">تصفير السجل</button>
+      </div>
+
+      <div class="tab-content" id="tab-history">
+        <div id="history-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== JACKPOT OVERLAY ===== -->
+  <div class="lottery-overlay jackpot-overlay" id="jackpot-overlay" aria-hidden="true">
+    <div class="jackpot-content">
+      <h2>استثناء!</h2>
+      <p class="jackpot-hint">اضغط في أي مكان للإغلاق</p>
+    </div>
+  </div>
+
+  <!-- ===== CONFIRMATION MODAL ===== -->
+  <div class="lottery-overlay" id="custom-modal" aria-hidden="true">
+    <div class="lottery-overlay-panel modal-panel">
+      <h2 class="lottery-overlay-title" id="modal-title"></h2>
+      <p class="modal-msg" id="modal-msg"></p>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-confirm" id="modal-confirm-btn">تأكيد</button>
+        <button class="modal-btn modal-btn-cancel" id="modal-cancel-btn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER (matches index.html) ===== -->
+  <footer class="site-footer" aria-label="تذييل الصفحة">
+    <div class="footer-inner">
+
+      <div class="footer-social">
+        <a href="https://www.youtube.com/@alaboren" target="_blank" rel="noopener noreferrer">
+          <img src="icons/youtube.svg" alt="YouTube">
+        </a>
+        <a href="https://instagram.com/alaborenofficial" target="_blank" rel="noopener noreferrer">
+          <img src="icons/instagram.svg" alt="Instagram">
+        </a>
+        <a href="https://facebook.com/61584739162702" target="_blank" rel="noopener noreferrer">
+          <img src="icons/facebook.svg" alt="Facebook">
+        </a>
+        <a href="https://x.com/alaborenstudio" target="_blank" rel="noopener noreferrer">
+          <img src="icons/twitter.svg" alt="X">
+        </a>
+        <a href="https://tiktok.com/@alaborenofficial" target="_blank" rel="noopener noreferrer">
+          <img src="icons/tiktok.svg" alt="TikTok">
+        </a>
+      </div>
+
+      <div class="footer-grid">
+        <nav class="footer-nav footer-nav--stack" aria-label="روابط الصفحات">
+          <a href="pinyintable.html">جدول النطق</a>
+          <a href="lottery.html">مولدة هجاء الأصوات</a>
+          <a href="tone-pairs.html">أزواج النغمات</a>
+        </nav>
+
+        <div class="footer-contact footer-contact--stack">
+          <a href="mailto:letstalk@alaboren.com" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+            </svg>
+            letstalk@alaboren.com
+          </a>
+
+        </div>
+
+        <p class="footer-support">الصيني مو مستحيل<br> وتعلمه سهل كثير</p>
+        
+      </div>
+
+      <div class="footer-meta">
+        <span>© <span id="year"></span></span>
+      </div>
+
+    </div>
+  </footer>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+  <script src="lottery.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ar" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pinyin Table</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-logo.png">
+  <link rel="apple-touch-icon" href="icons/icon-logo.png">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="pinyintable.css" />
+</head>
+
+<body class="page-wrapper">
+
+    <header aria-label="ترويسة الصفحة">
+      <div class="logo">
+        <a href="index.html" aria-label="العودة إلى الرئيسية">
+          <img src="img/logo-light-zh.png" alt="alaboRen" />
+        </a>
+        <a href="index.html" aria-label="العودة إلى الرئيسية">
+          <img src="img/logo-light-ar.png" alt="ألابورن" />
+        </a>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="page-title">
+        <h1>拼音</h1>
+      </div>
+
+      <div class="columns">
+
+        <!-- LEFT COLUMN (5) -->
+        <section class="col col-left">
+          <div class="box overlay-card" id="L1" data-slot="L1">
+            <div class="label">L1</div>
+            <div class="desc">Left column item 1 (placeholder)</div>
+          </div>
+          <div class="box overlay-card" id="L2" data-slot="L2">
+            <div class="label">L2</div>
+            <div class="desc">Left column item 2 (placeholder)</div>
+          </div>
+          <div class="box overlay-card" id="L3" data-slot="L3">
+            <div class="label">L3</div>
+            <div class="desc">Left column item 3 (placeholder)</div>
+          </div>
+          <div class="box overlay-card" id="L4" data-slot="L4">
+            <div class="label">L4</div>
+            <div class="desc">Left column item 4 (placeholder)</div>
+          </div>
+          <div class="box overlay-card l5-card" id="L5" data-slot="L5">
+            <div class="label">L5</div>
+            <div class="desc">Left column item 5 (placeholder)</div>
+          </div>
+        </section>
+
+        <!-- TOP CONTROLS (FINALS + TONES) -->
+        <div class="col col-center" aria-label="Top controls">
+          <div class="box top-controls-card" id="top-controls" role="group" aria-label="Final families and tone selection">
+
+            <!-- Layout: ONE ROW (finals left, tones right) -->
+            <div class="top-controls-layout top-controls-layout--row" aria-label="Top controls row layout">
+              <section class="top-controls-section top-controls-finals" aria-label="Final families">
+                <div class="finals" id="finals" role="group" aria-label="Final family buttons">
+                  <button class="final" type="button" data-family="a" aria-label="Final family a">a</button>
+                  <button class="final" type="button" data-family="o" aria-label="Final family o">o</button>
+                  <button class="final" type="button" data-family="e" aria-label="Final family e">e</button>
+                  <button class="final" type="button" data-family="i" aria-label="Final family i">i</button>
+                  <button class="final" type="button" data-family="u" aria-label="Final family u">u</button>
+                  <button class="final" type="button" data-family="ü" aria-label="Final family ü">ü</button>
+                </div>
+              </section>
+
+              <section class="top-controls-section top-controls-tones" aria-label="Tones">
+                <div class="tone-indicator" id="tones" role="group" aria-label="Tone icons">
+                  <img class="tone-icon" data-tone="1" src="img/first.png"  alt="Tone 1">
+                  <img class="tone-icon" data-tone="2" src="img/second.png" alt="Tone 2">
+                  <img class="tone-icon" data-tone="3" src="img/third.png"  alt="Tone 3">
+                  <img class="tone-icon" data-tone="4" src="img/fourth.png" alt="Tone 4">
+                </div>
+              </section>
+            </div>
+
+            <!-- Layout: TWO ROWS (finals row, tones row) -->
+            <div class="top-controls-layout top-controls-layout--stack" aria-label="Top controls stacked layout">
+              <section class="top-controls-section top-controls-finals" aria-label="Final families">
+                <div class="finals" role="group" aria-label="Final family buttons">
+                  <button class="final" type="button" data-family="a" aria-label="Final family a">a</button>
+                  <button class="final" type="button" data-family="o" aria-label="Final family o">o</button>
+                  <button class="final" type="button" data-family="e" aria-label="Final family e">e</button>
+                  <button class="final" type="button" data-family="i" aria-label="Final family i">i</button>
+                  <button class="final" type="button" data-family="u" aria-label="Final family u">u</button>
+                  <button class="final" type="button" data-family="ü" aria-label="Final family ü">ü</button>
+                </div>
+              </section>
+
+              <section class="top-controls-section top-controls-tones" aria-label="Tones">
+                <div class="tone-indicator" role="group" aria-label="Tone icons">
+                  <img class="tone-icon" data-tone="1" src="img/first.png"  alt="Tone 1">
+                  <img class="tone-icon" data-tone="2" src="img/second.png" alt="Tone 2">
+                  <img class="tone-icon" data-tone="3" src="img/third.png"  alt="Tone 3">
+                  <img class="tone-icon" data-tone="4" src="img/fourth.png" alt="Tone 4">
+                </div>
+              </section>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN (5) -->
+        <section class="col col-right">
+          <div class="box overlay-card" id="R1" data-slot="R1">
+            <div class="label">R1</div>
+            <div class="desc">Right column item 1 (placeholder)</div>
+          </div>
+          <div class="box overlay-card" id="R2" data-slot="R2">
+            <div class="label">R2</div>
+            <div class="desc">Right column item 2 (placeholder)</div>
+          </div>
+          <div class="box overlay-card" id="R3" data-slot="R3">
+            <div class="label">R3</div>
+            <div class="desc">Right column item 3 (placeholder)</div>
+          </div>
+          <div class="box overlay-card" id="R4" data-slot="R4">
+            <div class="label">R4</div>
+            <div class="desc">Right column item 4 (placeholder)</div>
+          </div>
+          <div class="box overlay-card l5-card" id="R5" data-slot="R5">
+            <div class="label">R5</div>
+            <div class="desc">Right column item 5 (placeholder)</div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <footer class="site-footer" aria-label="تذييل الصفحة">
+      <div class="footer-inner">
+
+        <div class="footer-social">
+          <a href="https://www.youtube.com/@alaboren" target="_blank" rel="noopener noreferrer">
+            <img src="icons/youtube.svg" alt="YouTube">
+          </a>
+          <a href="https://instagram.com/alaborenofficial" target="_blank" rel="noopener noreferrer">
+            <img src="icons/instagram.svg" alt="Instagram">
+          </a>
+          <a href="https://facebook.com/61584739162702" target="_blank" rel="noopener noreferrer">
+            <img src="icons/facebook.svg" alt="Facebook">
+          </a>
+          <a href="https://x.com/alaborenstudio" target="_blank" rel="noopener noreferrer">
+            <img src="icons/twitter.svg" alt="X">
+          </a>
+          <a href="https://tiktok.com/@alaborenofficial" target="_blank" rel="noopener noreferrer">
+            <img src="icons/tiktok.svg" alt="TikTok">
+          </a>
+        </div>
+
+        <div class="footer-grid">
+          <nav class="footer-nav footer-nav--stack" aria-label="روابط الصفحات">
+            <a href="pinyintable.html">جدول النطق</a>
+            <a href="lottery.html">مولد التدريب</a>
+            <a href="tone-pairs.html">أزواج النغمات</a>
+          </nav>
+
+          <div class="footer-contact footer-contact--stack">
+            <a href="mailto:your@email.com" class="footer-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+              </svg>
+              your@email.com
+            </a>
+            <a href="https://paypal.me/yourname" target="_blank" rel="noopener noreferrer" class="footer-link">
+              <img src="icons/paypal.png" alt="PayPal">
+              paypal.me/yourname
+            </a>
+          </div>
+
+          <p class="footer-support">إذا حاب تدعم المشروع، بايبال بيساعد — المتابعة على السوشيال بتكفّي.</p>
+        </div>
+
+        <div class="footer-meta">
+          <span>© <span id="year"></span></span>
+        </div>
+
+      </div>
+    </footer>
+
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+  <div class="penguin-sky" id="penguin-sky" aria-hidden="true"></div>
+
+  <script src="script.js"></script>
+  <script src="pinyintable.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النغمات المزدوجة</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-logo.png">
+    <link rel="apple-touch-icon" href="icons/icon-logo.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="tone-pairs.css">
+</head>
+<body class="page-wrapper">
+
+    <header class="page-header">
+      <a href="index.html"><img src="img/logo-light-ar.png" alt="ألابورن"></a>
+      <a href="index.html"><img src="img/logo-light-zh.png" alt="alaboRen"></a>
+    </header>
+
+    <main>
+      <div class="grid-wrapper">
+          <!-- Image Column (Left of Grid) -->
+          <div class="side-images">
+              <img src="img/first.png" class="side-img">
+              <img src="img/second.png" class="side-img">
+              <img src="img/third.png" class="side-img">
+              <img src="img/fourth.png" class="side-img">
+          </div>
+
+          <!-- Grid -->
+          <div class="grid-container" id="grid"></div>
+      </div>
+
+      <div class="bottom-section">
+
+          <!-- Left Side: Score + Options -->
+          <div class="bottom-left">
+              <div id="score-board" class="score-board">
+                  <div class="score-row">
+                      <span id="correct-count" class="score-correct">0</span>
+                      &nbsp;&nbsp;|&nbsp;&nbsp;
+                      <span id="wrong-count" class="score-wrong">0</span>
+                  </div>
+
+                  <div class="toggle-row">
+                      <label class="toggle-switch">
+                          <input type="checkbox" id="hide-pinyin-toggle" />
+                          <span class="toggle-slider"></span>
+                      </label>
+                      <span class="toggle-label">إخفاء الـ پن ين (×2 نقاط)</span>
+                  </div>
+                  <div class="toggle-row">
+                      <label class="toggle-switch">
+                          <input type="checkbox" id="animals-toggle" />
+                          <span class="toggle-slider"></span>
+                      </label>
+                      <span class="toggle-label">حيوانات</span>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Right Side: Deck -->
+          <div class="bottom-right">
+              <div class="deck-container">
+                  <div id="single-stack">
+                      <div class="stack-msg" id="stack-msg">
+                          开始<br><br>ابدأ
+                      </div>
+                  </div>
+              </div>
+
+              <div id="finish-message" style="display:none; font-weight:bold; color:var(--primary);">
+                  انتهى
+              </div>
+          </div>
+
+      </div>
+    </main>
+
+    <footer class="site-footer" aria-label="تذييل الصفحة">
+      <div class="footer-inner">
+
+        <div class="footer-social">
+          <a href="https://www.youtube.com/@alaboren" target="_blank" rel="noopener noreferrer">
+            <img src="icons/youtube.svg" alt="YouTube">
+          </a>
+          <a href="https://instagram.com/alaborenofficial" target="_blank" rel="noopener noreferrer">
+            <img src="icons/instagram.svg" alt="Instagram">
+          </a>
+          <a href="https://facebook.com/61584739162702" target="_blank" rel="noopener noreferrer">
+            <img src="icons/facebook.svg" alt="Facebook">
+          </a>
+          <a href="https://x.com/alaborenstudio" target="_blank" rel="noopener noreferrer">
+            <img src="icons/twitter.svg" alt="X">
+          </a>
+          <a href="https://tiktok.com/@alaborenofficial" target="_blank" rel="noopener noreferrer">
+            <img src="icons/tiktok.svg" alt="TikTok">
+          </a>
+        </div>
+
+        <div class="footer-grid">
+          <nav class="footer-nav footer-nav--stack" aria-label="روابط الصفحات">
+            <a href="pinyintable.html">جدول النطق</a>
+            <a href="lottery.html">مولد التدريب</a>
+            <a href="tone-pairs.html">أزواج النغمات</a>
+          </nav>
+
+          <div class="footer-contact footer-contact--stack">
+            <a href="mailto:your@email.com" class="footer-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+              </svg>
+              your@email.com
+            </a>
+            <a href="https://paypal.me/yourname" target="_blank" rel="noopener noreferrer" class="footer-link">
+              <img src="icons/paypal.png" alt="PayPal">
+              paypal.me/yourname
+            </a>
+          </div>
+
+          <p class="footer-support">إذا حاب تدعم المشروع، بايبال بيساعد — المتابعة على السوشيال بتكفّي.</p>
+        </div>
+
+        <div class="footer-meta">
+          <span>© <span id="year"></span></span>
+        </div>
+
+      </div>
+    </footer>
+
+  <script src="script.js"></script>
+  <script src="tone-pairs.js"></script>
+</body>
+</html>

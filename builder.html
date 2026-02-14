@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pinyin Builder</title>
+  <link rel="stylesheet" href="builder.css" />
+</head>
+<body>
+  <header class="wrap">
+    <h1>Pinyin Builder</h1>
+
+    <div class="controls">
+      <div class="control">
+        <div class="label">Final-Family</div>
+        <div class="segmented" id="familySeg"></div>
+      </div>
+
+      <div class="control">
+        <div class="label">Tone</div>
+        <div class="segmented" id="toneSeg"></div>
+      </div>
+
+<div class="control">
+  <div class="label">Side</div>
+  <div class="segmented" id="sideSeg"></div>
+</div>
+      <div class="control actions">
+                <button id="editModeBtn" type="button" aria-pressed="false">Edit Mode: OFF</button>
+        <button id="loadBtn" type="button">Load existing JSON</button>
+
+        <button id="saveBtn" type="button" class="primary">Save JSON</button>
+
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="builder-meta">
+      <span>Version: <b id="builderVersion">—</b></span>
+      <span>Last Edited: <b id="builderLastEdited">—</b></span>
+      <span>Saves: <b id="builderSaveCount">0</b></span>
+    </div>
+
+    <section class="card">
+      <div class="card-head">
+        <div id="statusText" class="status-line">
+          <span class="status-part left">
+            Side: <span class="var" id="statusSide">—</span>
+          </span>
+          <span class="status-part center">
+            Family: <span class="var" id="statusFamily">—</span>
+          </span>
+          <span class="status-part right">
+            Tone: <span class="var" id="statusTone">—</span>
+          </span>
+        </div>
+        <div class="counts">
+          <span>ON: <b id="onCount">0</b></span>
+          <span>OFF: <b id="offCount">0</b></span>
+        </div>
+      </div>
+
+      <div id="gridMount"></div>
+    </section>
+
+    <input id="fileInput" type="file" accept="application/json" hidden />
+  </main>
+
+  <script src="builder.js" defer></script>
+
+</body>
+
+</html>

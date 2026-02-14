@@ -1,0 +1,26 @@
+
+[
+  {"id":1,"hanzi":"今天","pinyin":"jīn tiān","pinyinPlain":"jin tian","arabic":"اليوم","correctCell":"1-1","tonePair":[1,1],"difficulty":1,"level":1,"tags":["time"]},
+  {"id":2,"hanzi":"中国","pinyin":"zhōng guó","pinyinPlain":"zhong guo","arabic":"الصين","correctCell":"1-2","tonePair":[1,2],"difficulty":1,"level":1,"tags":["place"]},
+  {"id":3,"hanzi":"出口","pinyin":"chū kǒu","pinyinPlain":"chu kou","arabic":"مخرج","correctCell":"1-3","tonePair":[1,3],"difficulty":1,"level":1,"tags":["place"]},
+  {"id":4,"hanzi":"高兴","pinyin":"gāo xìng","pinyinPlain":"gao xing","arabic":"سعيد","correctCell":"1-4","tonePair":[1,4],"difficulty":1,"level":1,"tags":["emotion"]},
+  {"id":5,"hanzi":"杯子","pinyin":"bēi zi","pinyinPlain":"bei zi","arabic":"كوب","correctCell":"1-5","tonePair":[1,5],"difficulty":1,"level":1,"tags":["object"]},
+
+  {"id":6,"hanzi":"明天","pinyin":"míng tiān","pinyinPlain":"ming tian","arabic":"غدًا","correctCell":"2-1","tonePair":[2,1],"difficulty":1,"level":1,"tags":["time"]},
+  {"id":7,"hanzi":"长城","pinyin":"cháng chéng","pinyinPlain":"chang cheng","arabic":"السور العظيم","correctCell":"2-2","tonePair":[2,2],"difficulty":1,"level":1,"tags":["place"]},
+  {"id":8,"hanzi":"门口","pinyin":"mén kǒu","pinyinPlain":"men kou","arabic":"عند الباب","correctCell":"2-3","tonePair":[2,3],"difficulty":1,"level":1,"tags":["place"]},
+  {"id":9,"hanzi":"难过","pinyin":"nán guò","pinyinPlain":"nan guo","arabic":"حزين","correctCell":"2-4","tonePair":[2,4],"difficulty":1,"level":1,"tags":["emotion"]},
+  {"id":10,"hanzi":"梨子","pinyin":"lí zi","pinyinPlain":"li zi","arabic":"كمثرى","correctCell":"2-5","tonePair":[2,5],"difficulty":1,"level":1,"tags":["object"]},
+
+  {"id":11,"hanzi":"改天","pinyin":"gǎi tiān","pinyinPlain":"gai tian","arabic":"يومًا آخر","correctCell":"3-1","tonePair":[3,1],"difficulty":1,"level":1,"tags":["time"]},
+  {"id":12,"hanzi":"美食","pinyin":"měi shí","pinyinPlain":"mei shi","arabic":"طعام لذيذ","correctCell":"3-2","tonePair":[3,2],"difficulty":1,"level":1,"tags":["food"]},
+  {"id":13,"hanzi":"广场","pinyin":"guǎng chǎng","pinyinPlain":"guang chang","arabic":"ساحة","correctCell":"3-3","tonePair":[3,3],"difficulty":1,"level":1,"tags":["place"]},
+  {"id":14,"hanzi":"感动","pinyin":"gǎn dòng","pinyinPlain":"gan dong","arabic":"متأثر","correctCell":"3-4","tonePair":[3,4],"difficulty":1,"level":1,"tags":["emotion"]},
+  {"id":15,"hanzi":"李子","pinyin":"lǐ zi","pinyinPlain":"li zi","arabic":"برقوق","correctCell":"3-5","tonePair":[3,5],"difficulty":1,"level":1,"tags":["object"]},
+
+  {"id":16,"hanzi":"后天","pinyin":"hòu tiān","pinyinPlain":"hou tian","arabic":"بعد غد","correctCell":"4-1","tonePair":[4,1],"difficulty":1,"level":1,"tags":["time"]},
+  {"id":17,"hanzi":"热情","pinyin":"rè qíng","pinyinPlain":"re qing","arabic":"حماسي","correctCell":"4-2","tonePair":[4,2],"difficulty":1,"level":1,"tags":["emotion"]},
+  {"id":18,"hanzi":"市长","pinyin":"shì zhǎng","pinyinPlain":"shi zhang","arabic":"عمدة","correctCell":"4-3","tonePair":[4,3],"difficulty":1,"level":1,"tags":["person"]},
+  {"id":19,"hanzi":"害怕","pinyin":"hài pà","pinyinPlain":"hai pa","arabic":"خائف","correctCell":"4-4","tonePair":[4,4],"difficulty":1,"level":1,"tags":["emotion"]},
+  {"id":20,"hanzi":"被子","pinyin":"bèi zi","pinyinPlain":"bei zi","arabic":"بطانية","correctCell":"4-5","tonePair":[4,5],"difficulty":1,"level":1,"tags":["object"]}
+]

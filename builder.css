@@ -1,0 +1,369 @@
+:root{
+  --ink:#2f4656;
+  --bg:#eef2f4;
+  --card:#ffffff;
+  --border: rgba(47,70,86,0.18);
+  --shadow: 0 10px 22px rgba(0,0,0,0.08);
+}
+
+/* =========================
+   Tone-based background
+   ========================= */
+body[data-tone="1"]{
+  --bg: #f4f4f4;
+}
+
+body[data-tone="2"]{
+  --bg: #eef2ff; /* light blue */
+}
+
+body[data-tone="3"]{
+  --bg: #ecfdf5; /* light green */
+}
+
+body[data-tone="4"]{
+  --bg: #fef2f2; /* light red */
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: "Avenir Next", Avenir, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wrap{
+  width:min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+header{ padding: 18px 0 8px; }
+h1{ margin: 0 0 14px; font-size: 28px; font-weight: 500; }
+
+.controls{
+  display:flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.control{ min-width: 0; }
+
+/* Push action buttons to the far right on wide screens */
+.actions{ margin-left: auto; }
+
+.control .label{ font-size: 14px; opacity: 0.85; margin-bottom: 8px; font-weight: 500; }
+
+select{
+  width:100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ink);
+  font-family: "Avenir Next", Avenir, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+select:hover{
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+select:focus,
+select:focus-visible{
+  outline: 3px solid rgba(47,70,86,0.35);
+  outline-offset: 2px;
+  box-shadow: 0 10px 22px rgba(47,70,86,0.10);
+}
+
+/* Give 'selected' state (when the value differs from placeholder/empty) */
+select.is-selected{
+  border-color: rgba(47,70,86,0.35);
+  background: rgba(47,70,86,0.06);
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  align-items:center;
+}
+
+button{
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: "Avenir Next", Avenir, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  cursor:pointer;
+  box-shadow: none;
+}
+
+button:hover{
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+button:focus,
+button:focus-visible{
+  outline: 3px solid rgba(47,70,86,0.35);
+  outline-offset: 2px;
+}
+
+button.primary{
+  background: var(--ink);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* =========================
+   Edit Mode Active State
+   ========================= */
+button#editModeBtn.active,
+button#editModeBtn[aria-pressed="true"],
+button.edit-mode.active{
+  background: #f6a75c;
+  border-color: #f6a75c;
+  color: #ffffff;
+}
+
+button:active{ transform: translateY(1px); }
+
+/* =========================
+   SEGMENTED (Family buttons)
+   Fix: remove double-selected look
+   ========================= */
+.segmented{
+  display:flex;
+  gap:8px;
+  flex-wrap:nowrap;
+  align-items:center;
+}
+
+.seg-btn{
+  border: 1px solid var(--border);
+  background:#fff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: "Avenir Next", Avenir, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  cursor:pointer;
+  user-select:none;
+  transition: background-color 120ms ease, box-shadow 120ms ease, transform 120ms ease, border-color 120ms ease;
+}
+
+/* Hover / active */
+.seg-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.seg-btn:active{
+  transform: translateY(0px);
+  box-shadow: none;
+}
+
+/* Focus should NOT look like "selected" */
+.seg-btn:focus{
+  outline: none;
+}
+.seg-btn:focus-visible{
+  outline: 2px solid rgba(47,70,86,0.22);
+  outline-offset: 3px;
+}
+
+/* Selected state (JS can toggle .active) */
+.seg-btn.active,
+.seg-btn[aria-pressed="true"],
+.seg-btn.is-selected{
+  background: rgba(47,70,86,0.10);
+  border-color: rgba(47,70,86,0.30);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+/* Single source of truth for selected state = body[data-family] */
+body[data-family="a"]  .seg-btn[data-family="a"],
+body[data-family="o"]  .seg-btn[data-family="o"],
+body[data-family="e"]  .seg-btn[data-family="e"],
+body[data-family="i"]  .seg-btn[data-family="i"],
+body[data-family="u"]  .seg-btn[data-family="u"],
+body[data-family="ü"]  .seg-btn[data-family="ü"]{
+  background: rgba(47,70,86,0.10);
+  border-color: rgba(47,70,86,0.30);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  outline: 2px solid rgba(47,70,86,0.18);
+}
+
+.hint{ margin: 14px 0; font-size: 15px; opacity: 0.9; }
+
+.builder-meta{
+  margin: 24px 0;
+  font-size: 15px;
+  opacity: 0.9;
+  font-weight: 400;
+  text-align: right;
+}
+
+.builder-meta b{
+  font-weight: 400;
+}
+
+.card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   Status line (Side / Family / Tone)
+   ========================= */
+#statusText.status-line{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  width:100%;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 20px 40px 20px;
+}
+
+#statusText.status-line .status-part{
+  flex: 1;
+  white-space: nowrap;
+}
+
+#statusText.status-line .status-part.left{ text-align: left; }
+#statusText.status-line .status-part.center{ text-align: center; }
+#statusText.status-line .status-part.right{ text-align: right; }
+
+#statusText.status-line .var{
+  color: rgba(31,95,168,0.95);
+  font-weight: 500;
+  font-size: 48px;
+}
+.counts{ display:flex; gap:14px; font-size: 14px; opacity:0.9; }
+.counts b{ font-size: 14px; font-weight: 500; }
+
+.grid{
+  width:100%;
+  border-collapse: separate;
+  border-spacing:0;
+  table-layout: fixed;
+  overflow:hidden;
+  border-radius: 0;
+}
+
+.grid th, .grid td{
+  text-align:center;
+  border: 0;
+  padding: 0;
+}
+
+.grid thead th{
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  background: rgba(0,0,0,0.10);
+  font-family: "Avenir Next", Avenir, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.grid .stub{
+  width: 70px;
+  background: var(--ink);
+  color:#fff;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: "Avenir Next", Avenir, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.cell-btn{
+  width:100%;
+  height: 58px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(255,255,255,0.92);
+  font-size: 18px;
+  font-weight: 400;
+  font-family: "Avenir Next", Avenir, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--ink);
+  cursor:pointer;
+}
+
+tbody tr:nth-child(even) .cell-btn{ background: rgba(255,255,255,0.72); }
+
+
+/* User-toggled OFF cells (still clickable to re-enable) */
+.cell-btn.off{
+  background: transparent !important;
+  color: transparent;
+  text-shadow:none;
+  cursor:pointer;
+}
+
+/* Invalid / non-existent combos (JS sets .locked + disabled=true) */
+.cell-btn.locked,
+.cell-btn:disabled{
+  background: rgba(47,70,86,0.10) !important;
+  color: rgba(47,70,86,0.35) !important;
+  cursor: default !important;
+  box-shadow: none !important;
+  transform: none !important;
+  text-shadow:none;
+}
+
+
+/* Prevent hover styles from making disabled cells look interactive */
+.cell-btn.locked:hover,
+.cell-btn:disabled:hover{
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+@media (max-width: 900px){
+  .controls{
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .actions{
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .segmented{
+    flex-wrap: wrap;
+  }
+  #statusText.status-line{
+    font-size: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #statusText.status-line .status-part{
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  #statusText.status-line .status-part.left,
+  #statusText.status-line .status-part.center,
+  #statusText.status-line .status-part.right{
+    text-align: left;
+  }
+}
