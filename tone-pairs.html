@@ -4,27 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>النغمات المزدوجة</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-logo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-logo.png">
-    <link rel="apple-touch-icon" href="icons/icon-logo.png">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="tone-pairs.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon-logo.png">
+    <link rel="apple-touch-icon" href="assets/icons/icon-logo.png">
+    <link rel="preload" href="data/cards.json" as="fetch" type="application/json" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/tone-pairs.css">
 </head>
 <body class="page-wrapper">
 
     <header class="page-header">
-      <a href="index.html"><img src="img/logo-light-ar.png" alt="ألابورن"></a>
-      <a href="index.html"><img src="img/logo-light-zh.png" alt="alaboRen"></a>
+      <a href="index.html"><img src="assets/img/logo-light-ar.png" alt="ألابورن"></a>
+      <a href="index.html"><img src="assets/img/logo-light-zh.png" alt="alaboRen"></a>
     </header>
 
     <main>
       <div class="grid-wrapper">
           <!-- Image Column (Left of Grid) -->
           <div class="side-images">
-              <img src="img/first.png" class="side-img">
-              <img src="img/second.png" class="side-img">
-              <img src="img/third.png" class="side-img">
-              <img src="img/fourth.png" class="side-img">
+              <img src="assets/img/first.png" class="side-img">
+              <img src="assets/img/second.png" class="side-img">
+              <img src="assets/img/third.png" class="side-img">
+              <img src="assets/img/fourth.png" class="side-img">
           </div>
 
           <!-- Grid -->
@@ -72,9 +73,24 @@
               <div id="finish-message" style="display:none; font-weight:bold; color:var(--primary);">
                   انتهى
               </div>
-          </div>
+              </div>
 
       </div>
+
+      <section class="video-section" aria-label="شرح أزواج النغمات">
+          <div class="video-copy">
+              <h2>شرح أزواج النغمات</h2>
+              <p>مساحة جاهزة لفيديو الشرح أو العرض العملي من قناة ألابورن.</p>
+          </div>
+          <div class="video-frame">
+              <iframe
+                  src="https://www.youtube.com/embed?listType=user_uploads&list=alaboren"
+                  title="شرح أزواج النغمات"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen></iframe>
+          </div>
+      </section>
     </main>
 
     <footer class="site-footer" aria-label="تذييل الصفحة">
@@ -82,19 +98,19 @@
 
         <div class="footer-social">
           <a href="https://www.youtube.com/@alaboren" target="_blank" rel="noopener noreferrer">
-            <img src="icons/youtube.svg" alt="YouTube">
+            <img src="assets/icons/youtube.svg" alt="YouTube">
           </a>
           <a href="https://instagram.com/alaborenofficial" target="_blank" rel="noopener noreferrer">
-            <img src="icons/instagram.svg" alt="Instagram">
+            <img src="assets/icons/instagram.svg" alt="Instagram">
           </a>
           <a href="https://facebook.com/61584739162702" target="_blank" rel="noopener noreferrer">
-            <img src="icons/facebook.svg" alt="Facebook">
+            <img src="assets/icons/facebook.svg" alt="Facebook">
           </a>
           <a href="https://x.com/alaborenstudio" target="_blank" rel="noopener noreferrer">
-            <img src="icons/twitter.svg" alt="X">
+            <img src="assets/icons/twitter.svg" alt="X">
           </a>
           <a href="https://tiktok.com/@alaborenofficial" target="_blank" rel="noopener noreferrer">
-            <img src="icons/tiktok.svg" alt="TikTok">
+            <img src="assets/icons/tiktok.svg" alt="TikTok">
           </a>
         </div>
 
@@ -103,23 +119,20 @@
             <a href="pinyintable.html">جدول النطق</a>
             <a href="lottery.html">مولد التدريب</a>
             <a href="tone-pairs.html">أزواج النغمات</a>
+            <a href="signup.html">التسجيل</a>
           </nav>
 
           <div class="footer-contact footer-contact--stack">
-            <a href="mailto:your@email.com" class="footer-link">
+            <a href="mailto:letstalk@alaboren.com" class="footer-link">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>
                 <rect x="2" y="4" width="20" height="16" rx="2"/>
               </svg>
-              your@email.com
-            </a>
-            <a href="https://paypal.me/yourname" target="_blank" rel="noopener noreferrer" class="footer-link">
-              <img src="icons/paypal.png" alt="PayPal">
-              paypal.me/yourname
+              letstalk@alaboren.com
             </a>
           </div>
 
-          <p class="footer-support">إذا حاب تدعم المشروع، بايبال بيساعد — المتابعة على السوشيال بتكفّي.</p>
+          <p class="footer-support">الصيني مو مستحيل<br> وتعلمه سهل كثير</p>
         </div>
 
         <div class="footer-meta">
@@ -129,7 +142,7 @@
       </div>
     </footer>
 
-  <script src="script.js"></script>
-  <script src="tone-pairs.js"></script>
+  <script src="assets/js/script.js"></script>
+  <script src="assets/js/tone-pairs.js"></script>
 </body>
 </html>

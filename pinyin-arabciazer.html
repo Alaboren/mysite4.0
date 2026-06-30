@@ -339,7 +339,7 @@
           <button id="clearBtn" type="button">Clear</button>
           <button id="copyBtn" type="button">Copy output</button>
           <div class="controls-right">
-            <span class="hint" id="status">Loading pinyin-mapping.json…</span>
+            <span class="hint" id="status">Loading data/pinyin-mapping.json…</span>
           </div>
         </div>
       </div>
@@ -370,7 +370,7 @@
     let MAP = null;
 
     // Resolve path: same folder as this HTML.
-    const MAP_URL = "./pinyin-mapping.json";
+    const MAP_URL = "./data/pinyin-mapping.json";
 
     const statusEl = document.getElementById("status");
     const outEl = document.getElementById("out");
@@ -390,7 +390,7 @@
         setStatus("Ready.");
       }catch(err){
         console.error(err);
-        setStatus("Failed to load pinyin-mapping.json (check path).");
+        setStatus("Failed to load data/pinyin-mapping.json (check path).");
       }
     }
 

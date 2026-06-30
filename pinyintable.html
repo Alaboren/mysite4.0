@@ -4,11 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pinyin Table</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-logo.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-logo.png">
-  <link rel="apple-touch-icon" href="icons/icon-logo.png">
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="pinyintable.css" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon-logo.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-logo.png">
+  <link rel="preload" href="data/pinyintable.json" as="fetch" type="application/json" crossorigin="anonymous">
+  <link rel="preload" href="data/pinyin-tone-map.json" as="fetch" type="application/json" crossorigin="anonymous">
+  <link rel="preload" href="data/pinyin-mapping.json" as="fetch" type="application/json" crossorigin="anonymous">
+  <link rel="prefetch" href="tone-pairs.html">
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/pinyintable.css" />
 </head>
 
 <body class="page-wrapper">
@@ -16,10 +20,10 @@
     <header aria-label="ترويسة الصفحة">
       <div class="logo">
         <a href="index.html" aria-label="العودة إلى الرئيسية">
-          <img src="img/logo-light-zh.png" alt="alaboRen" />
+          <img src="assets/img/logo-light-zh.png" alt="alaboRen" />
         </a>
         <a href="index.html" aria-label="العودة إلى الرئيسية">
-          <img src="img/logo-light-ar.png" alt="ألابورن" />
+          <img src="assets/img/logo-light-ar.png" alt="ألابورن" />
         </a>
       </div>
     </header>
@@ -74,10 +78,10 @@
 
               <section class="top-controls-section top-controls-tones" aria-label="Tones">
                 <div class="tone-indicator" id="tones" role="group" aria-label="Tone icons">
-                  <img class="tone-icon" data-tone="1" src="img/first.png"  alt="Tone 1">
-                  <img class="tone-icon" data-tone="2" src="img/second.png" alt="Tone 2">
-                  <img class="tone-icon" data-tone="3" src="img/third.png"  alt="Tone 3">
-                  <img class="tone-icon" data-tone="4" src="img/fourth.png" alt="Tone 4">
+                  <img class="tone-icon" data-tone="1" src="assets/img/first.png"  alt="Tone 1">
+                  <img class="tone-icon" data-tone="2" src="assets/img/second.png" alt="Tone 2">
+                  <img class="tone-icon" data-tone="3" src="assets/img/third.png"  alt="Tone 3">
+                  <img class="tone-icon" data-tone="4" src="assets/img/fourth.png" alt="Tone 4">
                 </div>
               </section>
             </div>
@@ -97,10 +101,10 @@
 
               <section class="top-controls-section top-controls-tones" aria-label="Tones">
                 <div class="tone-indicator" role="group" aria-label="Tone icons">
-                  <img class="tone-icon" data-tone="1" src="img/first.png"  alt="Tone 1">
-                  <img class="tone-icon" data-tone="2" src="img/second.png" alt="Tone 2">
-                  <img class="tone-icon" data-tone="3" src="img/third.png"  alt="Tone 3">
-                  <img class="tone-icon" data-tone="4" src="img/fourth.png" alt="Tone 4">
+                  <img class="tone-icon" data-tone="1" src="assets/img/first.png"  alt="Tone 1">
+                  <img class="tone-icon" data-tone="2" src="assets/img/second.png" alt="Tone 2">
+                  <img class="tone-icon" data-tone="3" src="assets/img/third.png"  alt="Tone 3">
+                  <img class="tone-icon" data-tone="4" src="assets/img/fourth.png" alt="Tone 4">
                 </div>
               </section>
             </div>
@@ -140,19 +144,19 @@
 
         <div class="footer-social">
           <a href="https://www.youtube.com/@alaboren" target="_blank" rel="noopener noreferrer">
-            <img src="icons/youtube.svg" alt="YouTube">
+            <img src="assets/icons/youtube.svg" alt="YouTube">
           </a>
           <a href="https://instagram.com/alaborenofficial" target="_blank" rel="noopener noreferrer">
-            <img src="icons/instagram.svg" alt="Instagram">
+            <img src="assets/icons/instagram.svg" alt="Instagram">
           </a>
           <a href="https://facebook.com/61584739162702" target="_blank" rel="noopener noreferrer">
-            <img src="icons/facebook.svg" alt="Facebook">
+            <img src="assets/icons/facebook.svg" alt="Facebook">
           </a>
           <a href="https://x.com/alaborenstudio" target="_blank" rel="noopener noreferrer">
-            <img src="icons/twitter.svg" alt="X">
+            <img src="assets/icons/twitter.svg" alt="X">
           </a>
           <a href="https://tiktok.com/@alaborenofficial" target="_blank" rel="noopener noreferrer">
-            <img src="icons/tiktok.svg" alt="TikTok">
+            <img src="assets/icons/tiktok.svg" alt="TikTok">
           </a>
         </div>
 
@@ -161,23 +165,20 @@
             <a href="pinyintable.html">جدول النطق</a>
             <a href="lottery.html">مولد التدريب</a>
             <a href="tone-pairs.html">أزواج النغمات</a>
+            <a href="signup.html">التسجيل</a>
           </nav>
 
           <div class="footer-contact footer-contact--stack">
-            <a href="mailto:your@email.com" class="footer-link">
+            <a href="mailto:letstalk@alaboren.com" class="footer-link">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>
                 <rect x="2" y="4" width="20" height="16" rx="2"/>
               </svg>
-              your@email.com
-            </a>
-            <a href="https://paypal.me/yourname" target="_blank" rel="noopener noreferrer" class="footer-link">
-              <img src="icons/paypal.png" alt="PayPal">
-              paypal.me/yourname
+              letstalk@alaboren.com
             </a>
           </div>
 
-          <p class="footer-support">إذا حاب تدعم المشروع، بايبال بيساعد — المتابعة على السوشيال بتكفّي.</p>
+          <p class="footer-support">الصيني مو مستحيل<br> وتعلمه سهل كثير</p>
         </div>
 
         <div class="footer-meta">
@@ -190,7 +191,7 @@
   <div class="backdrop" id="backdrop" aria-hidden="true"></div>
   <div class="penguin-sky" id="penguin-sky" aria-hidden="true"></div>
 
-  <script src="script.js"></script>
-  <script src="pinyintable.js" defer></script>
+  <script src="assets/js/script.js"></script>
+  <script src="assets/js/pinyintable.js" defer></script>
 </body>
 </html>
